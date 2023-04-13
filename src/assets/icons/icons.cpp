@@ -4,136 +4,147 @@
 // Arrow Left
 #define icon_arrow_left_width 12
 #define icon_arrow_left_height 14
-static const unsigned char icon_arrow_left[] U8X8_PROGMEM = {
+static const unsigned char icon_arrow_left_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x60, 0x00, 0x70, 0x00, 
   0x78, 0x00, 0x70, 0x00, 0x60, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 
   0x00, 0x00, 0x00, 0x00, };
-Icon* arrow_left = new Icon(icon_arrow_left, icon_arrow_left_width, icon_arrow_left_width);
+Icon* icon_arrow_left = new Icon(icon_arrow_left_bitmap, icon_arrow_left_width, icon_arrow_left_width);
 
 
 // Arrow Right
 #define icon_arrow_right_width 12
 #define icon_arrow_right_height 14
-static const unsigned char icon_arrow_right[] U8X8_PROGMEM = {
+static const unsigned char icon_arrow_right_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x18, 0x00, 0x38, 0x00, 
   0x78, 0x00, 0x38, 0x00, 0x18, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 
   0x00, 0x00, 0x00, 0x00, };
-Icon* arrow_right = new Icon(icon_arrow_right, icon_arrow_right_width, icon_arrow_right_width);
+Icon* icon_arrow_right = new Icon(icon_arrow_right_bitmap, icon_arrow_right_width, icon_arrow_right_width);
 
 
 // Back
 #define icon_back_width 16
 #define icon_back_height 16
-static const unsigned char icon_back[] U8X8_PROGMEM = {
+static const unsigned char icon_back_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xE0, 0x1F, 0xE0, 0x1F, 
   0x60, 0x18, 0xF8, 0x19, 0xF0, 0x18, 0x60, 0x18, 0x00, 0x1F, 0x80, 0x1F, 
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-Icon* back = new Icon(icon_back, icon_back_width, icon_back_width);
+Icon* icon_back = new Icon(icon_back_bitmap, icon_back_width, icon_back_width);
 
 
 // Custom Reflow
 #define icon_cus_reflow_width 16
 #define icon_cus_reflow_height 16
-static const unsigned char icon_cus_reflow[] U8X8_PROGMEM = {
+static const unsigned char icon_cus_reflow_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x40, 0x02, 0x00, 
   0x40, 0x10, 0x02, 0x00, 0x20, 0x05, 0x02, 0x00, 0x10, 0x00, 0x02, 0x00, 
   0x08, 0x00, 0x02, 0x00, 0x56, 0x55, 0x00, 0x00, };
-Icon* cus_reflow = new Icon(icon_cus_reflow, icon_cus_reflow_width, icon_cus_reflow_width);
+Icon* icon_cus_reflow = new Icon(icon_cus_reflow_bitmap, icon_cus_reflow_width, icon_cus_reflow_width);
 
 
 // Generic Reflow
 #define icon_gen_reflow_width 16
 #define icon_gen_reflow_height 16
-static const unsigned char icon_gen_reflow[] U8X8_PROGMEM = {
+static const unsigned char icon_gen_reflow_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x0C, 0x02, 0x16, 
   0x00, 0x2F, 0x02, 0x17, 0xA0, 0x2F, 0xF2, 0x17, 0xF8, 0x2F, 0xFA, 0x17, 
   0xF8, 0x2F, 0x02, 0x00, 0x56, 0x55, 0x00, 0x00, };
-Icon* gen_reflow = new Icon(icon_gen_reflow, icon_gen_reflow_width, icon_gen_reflow_width);
+Icon* icon_gen_reflow = new Icon(icon_gen_reflow_bitmap, icon_gen_reflow_width, icon_gen_reflow_width);
 
 
 // Menu
 #define icon_menu_width 16
 #define icon_menu_height 16
-static const unsigned char icon_menu[] U8X8_PROGMEM = {
+static const unsigned char icon_menu_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xE6, 0x7F, 0xE6, 0x7F, 0x00, 0x00, 
   0x00, 0x00, 0xE6, 0x7F, 0xE6, 0x7F, 0x00, 0x00, 0x00, 0x00, 0xE6, 0x7F, 
   0xE6, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-Icon* menu = new Icon(icon_menu, icon_menu_width, icon_menu_width);
+Icon* icon_menu = new Icon(icon_menu_bitmap, icon_menu_width, icon_menu_width);
 
 
 // Settings
 #define icon_settings_width 16
 #define icon_settings_height 16
-static const unsigned char icon_settings[] U8X8_PROGMEM = {
+static const unsigned char icon_settings_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x06, 0x0E, 0x0E, 0x09, 0x1C, 0x05, 0x38, 0x65, 0xF0, 0x59, 
   0xA0, 0x40, 0x60, 0x3C, 0x3C, 0x06, 0x02, 0x09, 0x9A, 0x13, 0xA6, 0x26, 
   0xA0, 0x4C, 0x90, 0x58, 0x70, 0x30, 0x00, 0x00, };
-Icon* settings = new Icon(icon_settings, icon_settings_width, icon_settings_width);
+Icon* icon_settings = new Icon(icon_settings_bitmap, icon_settings_width, icon_settings_width);
 
 
 // Timer
 #define icon_timer_width 16
 #define icon_timer_height 16
-static const unsigned char icon_timer[] U8X8_PROGMEM = {
+static const unsigned char icon_timer_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0xC0, 0x03, 0x30, 0x0C, 0x08, 0x11, 0x04, 0x27, 0x04, 0x2F, 
   0x02, 0x4F, 0x02, 0x5F, 0x02, 0x40, 0x02, 0x40, 0x04, 0x20, 0x04, 0x20, 
   0x08, 0x10, 0x30, 0x0C, 0xC0, 0x03, 0x00, 0x00, };
-Icon* timer = new Icon(icon_timer, icon_timer_width, icon_timer_width);
+Icon* icon_timer = new Icon(icon_timer_bitmap, icon_timer_width, icon_timer_width);
 
 
 // Constante Temperature
 #define icon_t_const_width 16
 #define icon_t_const_height 16
-static const unsigned char icon_t_const[] U8X8_PROGMEM = {
+static const unsigned char icon_t_const_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0xAA, 0x2A, 0x54, 0x55, 0xAA, 0x2A, 0x00, 0x00, 
   0xFE, 0x7F, 0x08, 0x10, 0x08, 0x10, 0xFC, 0x3F, 0xFE, 0x7F, 0xFE, 0x7F, 
   0xFE, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-Icon* t_const = new Icon(icon_t_const, icon_t_const_width, icon_t_const_width);
+Icon* icon_t_const = new Icon(icon_t_const_bitmap, icon_t_const_width, icon_t_const_width);
 
 
 
 // Cooling Plate
 #define icon_t_cooling_width 16
 #define icon_t_cooling_height 16
-static const unsigned char icon_t_cooling[] U8X8_PROGMEM = {
+static const unsigned char icon_t_cooling_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFE, 0x7F, 0x08, 0x10, 
   0x08, 0x10, 0xFC, 0x3F, 0xFE, 0x7F, 0xFE, 0x7F, 0xFE, 0x7F, 0x00, 0x00, 
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-Icon* t_cooling = new Icon(icon_t_cooling, icon_t_cooling_width, icon_t_cooling_width);
+Icon* icon_t_cooling = new Icon(icon_t_cooling_bitmap, icon_t_cooling_width, icon_t_cooling_width);
 
 
 // Heating Plate 1
 #define icon_t_heating_1_width 16
 #define icon_t_heating_1_height 16
-static const unsigned char icon_t_heating_1[] U8X8_PROGMEM = {
+static const unsigned char icon_t_heating_1_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x92, 0x24, 0x24, 0x49, 0x92, 0x24, 0x24, 0x49, 0x92, 0x24, 
   0x00, 0x00, 0xFE, 0x7F, 0x08, 0x10, 0x08, 0x10, 0xFC, 0x3F, 0xFE, 0x7F, 
   0xFE, 0x7F, 0xFE, 0x7F, 0x00, 0x00, 0x00, 0x00, };
-Icon* t_heating_1 = new Icon(icon_t_heating_1, icon_t_heating_1_width, icon_t_heating_1_width);
+Icon* icon_t_heating_1 = new Icon(icon_t_heating_1_bitmap, icon_t_heating_1_width, icon_t_heating_1_width);
 
 
 // Heating Plate 2
 #define icon_t_heating_2_width 16
 #define icon_t_heating_2_height 16
-static const unsigned char icon_t_heating_2[] U8X8_PROGMEM = {
+static const unsigned char icon_t_heating_2_bitmap[] U8X8_PROGMEM = {
   0x00, 0x00, 0x24, 0x49, 0x92, 0x24, 0x24, 0x49, 0x92, 0x24, 0x24, 0x49, 
   0x00, 0x00, 0xFE, 0x7F, 0x08, 0x10, 0x08, 0x10, 0xFC, 0x3F, 0xFE, 0x7F, 
   0xFE, 0x7F, 0xFE, 0x7F, 0x00, 0x00, 0x00, 0x00, };
-Icon* t_heating_2 = new Icon(icon_t_heating_2, icon_t_heating_2_width, icon_t_heating_2_width);
+Icon* icon_t_heating_2 = new Icon(icon_t_heating_2_bitmap, icon_t_heating_2_width, icon_t_heating_2_width);
+
+
+// Blank Icon
+#define icon_blank_width 16
+#define icon_blank_height 16
+static const unsigned char icon_blank_bitmap[] U8X8_PROGMEM = {
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
+Icon* icon_blank = new Icon(icon_blank_bitmap, icon_blank_width, icon_blank_height);
 
 
 // Icons Array
-Icon* all_icons[12] = {
-    arrow_left,
-    arrow_right,
-    back,
-    cus_reflow, 
-    gen_reflow, 
-    menu, 
-    settings, 
-    timer, 
-    t_const, 
-    t_cooling, 
-    t_heating_1,
-    t_heating_2
+Icon* all_icons[13] = {
+    icon_arrow_left,
+    icon_arrow_right,
+    icon_back,
+    icon_cus_reflow, 
+    icon_gen_reflow, 
+    icon_menu, 
+    icon_settings, 
+    icon_timer, 
+    icon_t_const, 
+    icon_t_cooling, 
+    icon_t_heating_1,
+    icon_t_heating_2,
+    icon_blank
 };
