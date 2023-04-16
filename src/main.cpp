@@ -2,6 +2,7 @@
 #include <U8g2lib.h>
 
 #include "models/menu/menu.h"
+#include "models/rotary_switch/rotary_switch.h"
 
 #ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
@@ -10,104 +11,22 @@
 #include <Wire.h>
 #endif
 
-#define RS_SWITCH_PIN 6
-#define RS_DT_PIN 7
-#define RS_CLK_PIN 8
-// Variables to debounce Rotary Encoder
-long RS_last_debounce_time = 0;
-int RS_debounce_delay = 5;
-int RS_increment = 0;
-bool turnDetect = false;
-bool prev_turnDetect = false;
+#define RS_SWITCH_PIN 33
+#define RS_DT_PIN 25
+#define RS_CLK_PIN 26
 
-byte RS_PDT; 
-byte RS_DT; 
-byte RS_PCLK;
-byte RS_CLK;
-byte RS_is_clockwise;
-
-int counter = 0;
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
+Rotary_Switch* r_switch = new Rotary_Switch(RS_DT_PIN, RS_CLK_PIN, RS_SWITCH_PIN);
 
 Menu* menu = new Menu();
 
-
-void check_RS_states() {
-    RS_CLK = digitalRead(RS_CLK_PIN);
-    RS_DT = digitalRead(RS_DT_PIN);
-
-    // Serial.print("----------- ");
-    // Serial.print(counter);
-    // Serial.println(" -----------");
-    // Serial.println(" PDT | PCLK | INC | DT | CLK");
-    // Serial.print("  ");
-    // Serial.print(RS_PDT);
-    // Serial.print("  |  ");
-    // Serial.print(RS_PCLK);
-    // Serial.print("   |  ");
-    // Serial.print(RS_increment);
-    // Serial.print("  |  ");
-    // Serial.print(RS_DT);
-    // Serial.print(" |  ");
-    // Serial.println(RS_CLK);
-    // Serial.println("");
-
-    if(RS_increment != 1) {
-        RS_increment = 0;
-        return;
-    }
-
-    if(RS_PDT != RS_PCLK && RS_DT != RS_CLK) {
-        RS_is_clockwise = true;
-        counter++;
-        RS_increment = 0;
-        return;
-    }
-
-    if(RS_DT != RS_CLK) {
-        RS_is_clockwise = true;
-        counter++;
-        RS_increment = 0;
-        return;
-    }
-
-    if(RS_PDT == RS_PCLK && RS_DT == RS_CLK && RS_PDT != RS_CLK) {
-        RS_is_clockwise = false;
-        counter--;
-        RS_increment = 0;
-        return;
-    } else {
-        counter++;
-    }
-
-    RS_increment = 0;
-};
-
-void RS_turn_detect() {
-    turnDetect = digitalRead(RS_CLK_PIN);
-    // Serial.println(turnDetect);
-
-    if(turnDetect != prev_turnDetect) {
-      prev_turnDetect = turnDetect;
-      delay(RS_debounce_delay/3);
-      RS_increment++;
-      if(((millis() - RS_last_debounce_time) > RS_debounce_delay)) {
-          RS_PDT = RS_DT;
-          RS_PCLK = RS_CLK;
-
-          check_RS_states();
-
-          RS_last_debounce_time = millis();
-      }
-    //   Serial.println(counter);'
-    }
-}
-
 void setup(void) {
     u8g2.begin();
-    // Serial.begin(9600);
+    
+    r_switch->begin();
+    // Serial.begin(115200);
     // Put current pins state in variables
     pinMode(RS_DT_PIN, INPUT);
     pinMode(RS_CLK_PIN, INPUT);
@@ -118,13 +37,44 @@ void setup(void) {
 
 void loop(void) {
 
-    RS_turn_detect();
+    r_switch->turn_detect();
 
-    if(counter >= 6) counter--;
-    if(counter <= 0) counter++;
+    if(r_switch->counter >= 6) r_switch->counter--;
+    if(r_switch->counter <= 0) r_switch->counter++;
     u8g2.clearBuffer();
-    menu->draw(u8g2, counter);
+    menu->draw(u8g2, r_switch->counter);
     u8g2.sendBuffer();
+    
+    if(r_switch->get_switch_state()) {
+        switch (r_switch->counter) {
+            case 1:
+                u8g2.clearBuffer();
+                u8g2.drawStr(30, 30, "Temp. Constante");
+                u8g2.sendBuffer();
+                break;
+            case 2:
+                u8g2.clearBuffer();
+                u8g2.drawStr(30, 30, "Temporizador");
+                u8g2.sendBuffer();
+                break;
+            case 3:
+                u8g2.clearBuffer();
+                u8g2.drawStr(30, 30, "Refluxo Genérico");
+                u8g2.sendBuffer();
+                break;
+            case 4:
+                u8g2.clearBuffer();
+                u8g2.drawStr(30, 30, "Refluxo Personalizado");
+                u8g2.sendBuffer();
+                break;
+            case 5:
+                u8g2.clearBuffer();
+                u8g2.drawStr(30, 30, "Configuracoes");
+                u8g2.sendBuffer();
+                break;
+        }
+        delay(5000);
+    }
 
 
     // for(int i = 0; i < 6; i++) {
