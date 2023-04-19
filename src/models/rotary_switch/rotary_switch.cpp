@@ -28,6 +28,7 @@ void RotarySwitch::begin() {
 byte RotarySwitch::get_switch_state() {
     delay(this->_debounce_delay);
     this->was_clicked = !digitalRead(this->_SWITCH_PIN); 
+    delay(100);
     return this->was_clicked;
 }
 void RotarySwitch::turn_detect() {
