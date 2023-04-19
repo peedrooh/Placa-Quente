@@ -3,6 +3,8 @@
 
 #include "models/menu/menu.h"
 #include "models/rotary_switch/rotary_switch.h"
+#include "assets/big_numbers/big_numbers.h"
+#include "models/const_temp/const_temp.h"
 
 #ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
@@ -18,9 +20,12 @@
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
-Rotary_Switch* r_switch = new Rotary_Switch(RS_DT_PIN, RS_CLK_PIN, RS_SWITCH_PIN);
+RotarySwitch* r_switch = new RotarySwitch(RS_DT_PIN, RS_CLK_PIN, RS_SWITCH_PIN);
 
 Menu* menu = new Menu();
+ConstTemp* const_temp = new ConstTemp(555);
+int click_counter = 0;
+byte screen_state = 0;
 
 void setup(void) {
     u8g2.begin();
@@ -37,19 +42,34 @@ void setup(void) {
 
 void loop(void) {
 
-    r_switch->turn_detect();
+    // BASIC IMPLEMENTATION OF THE CONSTANT TEMPERATURE VIEW
+    // -----------------------------------------------------
+    // if(click_counter > 0) {
+    //     r_switch->turn_detect();
+    //     if(r_switch->counter >= 9) r_switch->counter--;
+    //     if(r_switch->counter <= 0) r_switch->counter++;
+    // }
+    // if(r_switch->get_switch_state()) {
+    //     click_counter--;
+    // }
+    // if(click_counter < 0) click_counter = 3;
 
-    if(r_switch->counter >= 6) r_switch->counter--;
-    if(r_switch->counter <= 0) r_switch->counter++;
-    u8g2.clearBuffer();
-    menu->draw(u8g2, r_switch->counter);
-    u8g2.sendBuffer();
+    // u8g2.clearBuffer();
+    // const_temp->draw(u8g2, click_counter, r_switch->counter);
+    // u8g2.sendBuffer();
+    // ----------------------------------------------------
+
+
+    // BASIC IMPLEMETATION OF THE MAIN MENU VIEW
+    // ----------------------------------------------------
+
+    if(r_switch->get_switch_state()) screen_state = !screen_state;
     
-    if(r_switch->get_switch_state()) {
+    if(screen_state) {
         switch (r_switch->counter) {
             case 1:
                 u8g2.clearBuffer();
-                u8g2.drawStr(30, 30, "Temp. Constante");
+                const_temp->draw(u8g2, 0, 0);
                 u8g2.sendBuffer();
                 break;
             case 2:
@@ -73,21 +93,15 @@ void loop(void) {
                 u8g2.sendBuffer();
                 break;
         }
-        delay(5000);
+        // delay(5000);
+    } else {
+        r_switch->turn_detect();
+
+        if(r_switch->counter >= 6) r_switch->counter--;
+        if(r_switch->counter <= 0) r_switch->counter++;
+        u8g2.clearBuffer();
+        menu->draw(u8g2, r_switch->counter);
+        u8g2.sendBuffer();
     }
-
-
-    // for(int i = 0; i < 6; i++) {
-    //     u8g2.clearBuffer();
-    //     menu->draw(u8g2, i);
-    //     u8g2.sendBuffer();
-    //     delay(500);
-    // }
-
-    // for(int i = 5; i > 0; i--) {
-    //     u8g2.clearBuffer();
-    //     menu->draw(u8g2, i);
-    //     u8g2.sendBuffer();
-    //     delay(500);
-    // }
+    // ----------------------------------------------------
 };
