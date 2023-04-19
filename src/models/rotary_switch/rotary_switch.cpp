@@ -1,7 +1,7 @@
 #include "rotary_switch.h"
 
 
-Rotary_Switch::Rotary_Switch(int data_pin, int clock_pin, int switch_pin)
+RotarySwitch::RotarySwitch(int data_pin, int clock_pin, int switch_pin)
 
 {
     this->_DATA_PIN = data_pin;
@@ -9,7 +9,7 @@ Rotary_Switch::Rotary_Switch(int data_pin, int clock_pin, int switch_pin)
     this->_SWITCH_PIN = switch_pin;
 }
 
-void Rotary_Switch::begin() {
+void RotarySwitch::begin() {
     pinMode(this->_DATA_PIN, INPUT);
     pinMode(this->_CLOCK_PIN, INPUT);
     pinMode(this->_SWITCH_PIN, INPUT_PULLUP);
@@ -25,12 +25,12 @@ void Rotary_Switch::begin() {
     this->_clock_ticks = 0;
 }
 
-byte Rotary_Switch::get_switch_state() {
+byte RotarySwitch::get_switch_state() {
     delay(this->_debounce_delay);
     this->was_clicked = !digitalRead(this->_SWITCH_PIN); 
     return this->was_clicked;
 }
-void Rotary_Switch::turn_detect() {
+void RotarySwitch::turn_detect() {
     this->_turnDetect = digitalRead(this->_DATA_PIN);
 
     if(this->_turnDetect != this->_prev_turnDetect) {
@@ -52,7 +52,7 @@ void Rotary_Switch::turn_detect() {
 }
 
 
-void Rotary_Switch::_check_states() {
+void RotarySwitch::_check_states() {
     this->_CLK = digitalRead(this->_CLOCK_PIN);
     this->_DT = digitalRead(this->_DATA_PIN);
 
