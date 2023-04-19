@@ -1,11 +1,11 @@
-#ifndef ROTARY_SWITCH_H
-#define ROTARY_SWITCH_H
+#ifndef ROTARYSWITCH_H
+#define ROTARYSWITCH_H
 
 #include <Arduino.h>
 
-class Rotary_Switch {
+class RotarySwitch {
     public: 
-        Rotary_Switch(int data_pin, int clock_pin, int switch_pin);
+        RotarySwitch(int data_pin, int clock_pin, int switch_pin);
         void begin();
         void turn_detect();
         int counter;
