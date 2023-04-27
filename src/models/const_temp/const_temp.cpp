@@ -156,6 +156,8 @@ void ConstTemp::draw(U8G2 &u8g2, uint8_t digit_index, uint8_t counter) {
         u8g2.drawXBM(41+4+(14*0), 25+3, all_big_nums[hundreds]->big_num_width , all_big_nums[hundreds]->big_num_height, all_big_nums[hundreds]->get_big_num());
         u8g2.drawXBM(41+4+(14*1), 25+3, all_big_nums[decimals]->big_num_width , all_big_nums[decimals]->big_num_height, all_big_nums[decimals]->get_big_num());
 
+        this->set_temperature(counter+(decimals*10)+(hundreds*100));
+
     } else {
         u8g2.setBitmapMode(false);
         u8g2.setDrawColor(1);
