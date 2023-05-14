@@ -6,6 +6,7 @@
 #include "assets/big_numbers/big_numbers.h"
 #include "models/const_temp/const_temp.h"
 #include "models/back_button/back_button.h"
+#include "models/gen_reflow/gen_reflow.h"
 
 #include "views/menu/menu_view.h"
 
@@ -32,12 +33,17 @@ BackButton* back_button = new BackButton(BACK_BUTTON);
 // Menu* menu = new Menu();
 
 ConstTemp* const_temp = new ConstTemp(555);
+GenericReflow* gen_relow = new GenericReflow();
 
 int click_counter = 0;
 uint8_t current_view = 0;
 byte screen_state = 0;
 
 void setup(void) {
+    
+    // ConstTemp knda(444);
+    // knda.draw(u8g2, 1, 1);
+
     u8g2.begin();
     
     r_switch->begin();
@@ -55,6 +61,10 @@ void setup(void) {
 }
 
 void loop(void) {
+
+    // u8g2.clearBuffer();
+    // gen_relow->draw_confirmation_screen(u8g2, 1);
+    // u8g2.sendBuffer();
 
     switch (current_view) {
         case 0:
@@ -79,6 +89,27 @@ void loop(void) {
                 current_view--;
             }
             break;
+        
+        case 3: {
+            byte answer = 1;
+
+            r_switch->turn_detect();
+            answer = 0;
+            if(r_switch->counter % 2) {
+                answer = 1;
+            } 
+
+            u8g2.clearBuffer();
+            gen_relow->draw_confirmation_screen(u8g2, answer);
+            u8g2.sendBuffer();
+
+            if(back_button->is_clicked()) {
+                current_view = 0;
+            }
+            if(r_switch->get_switch_state() && answer == 0) {
+                current_view = 0;
+            }
+        }break;
 
         default:
             show_menu(current_view, r_switch, u8g2);
