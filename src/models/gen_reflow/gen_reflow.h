@@ -6,8 +6,10 @@
 class GenericReflow {
     public:
         void draw_confirmation_screen(U8G2 &u8g2, byte is_yes);
+        void draw_temp_graph(U8G2 &u8g2);
     private:
-        void _draw_facus_answer(U8G2 &u8g2, uint8_t x, uint8_t y);
+        void _draw_XY_axis(U8G2 &u8g2);
+        void _draw_focus_answer(U8G2 &u8g2, uint8_t x, uint8_t y);
 };
 
 #endif

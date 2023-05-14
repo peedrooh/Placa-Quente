@@ -59,15 +59,16 @@ void setup(void) {
     // Set the Back button pin to input
     pinMode(BACK_BUTTON, INPUT);
 }
-
+byte was_answered = 0;
 void loop(void) {
 
     // u8g2.clearBuffer();
-    // gen_relow->draw_confirmation_screen(u8g2, 1);
+    // gen_relow->draw_temp_graph(u8g2);
     // u8g2.sendBuffer();
 
     switch (current_view) {
         case 0:
+            was_answered = 0;
             show_menu(current_view, r_switch, u8g2);
             break;
         
@@ -91,23 +92,33 @@ void loop(void) {
             break;
         
         case 3: {
-            byte answer = 1;
+            byte answer = 0;
 
-            r_switch->turn_detect();
-            answer = 0;
-            if(r_switch->counter % 2) {
-                answer = 1;
+            if(!was_answered) {
+                r_switch->turn_detect();
+                answer = 0;
+                if(r_switch->counter % 2) {
+                    answer = 1;
+                }
             } 
 
             u8g2.clearBuffer();
-            gen_relow->draw_confirmation_screen(u8g2, answer);
+            if(was_answered) {
+                gen_relow->draw_temp_graph(u8g2);
+            } else {
+                gen_relow->draw_confirmation_screen(u8g2, answer);
+            }
             u8g2.sendBuffer();
 
             if(back_button->is_clicked()) {
                 current_view = 0;
             }
-            if(r_switch->get_switch_state() && answer == 0) {
-                current_view = 0;
+            if(r_switch->get_switch_state()) {
+                if(answer == 0 && !was_answered) {
+                    current_view = 0;
+                } else {
+                    was_answered = 1;
+                }
             }
         }break;
 
