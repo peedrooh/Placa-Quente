@@ -60,11 +60,8 @@ void setup(void) {
     pinMode(BACK_BUTTON, INPUT);
 }
 byte was_answered = 0;
+float temperature = 20;
 void loop(void) {
-
-    // u8g2.clearBuffer();
-    // gen_relow->draw_temp_graph(u8g2);
-    // u8g2.sendBuffer();
 
     switch (current_view) {
         case 0:
@@ -79,6 +76,14 @@ void loop(void) {
                 if(r_switch->counter <= 0) r_switch->counter++;
             }
             if(r_switch->get_switch_state()) {
+                int t = const_temp->get_temperature();
+                int hundreds = (int) t/100;
+                int decimals = (int) (t - hundreds*100)/10;
+                int units = (int) (t - (hundreds*100) - (decimals*10));
+
+                if(click_counter == 2) r_switch->counter = hundreds;
+                if(click_counter == 3) r_switch->counter = decimals;
+                if(click_counter == 0) r_switch->counter = units;
                 click_counter--;
             }
             if(click_counter < 0) click_counter = 3;
@@ -102,13 +107,45 @@ void loop(void) {
                 }
             } 
 
-            u8g2.clearBuffer();
             if(was_answered) {
+                temperature = 0;
+                gen_relow->reset_graph();
+                u8g2.clearBuffer();
                 gen_relow->draw_temp_graph(u8g2);
+                u8g2.sendBuffer();
+
+
+                for(int i = 0; i < 330; i++) {
+                    if(back_button->is_clicked()) {
+                        current_view = 0;
+                        break;
+                    }
+                    if(i < 90) {
+                        temperature += 1.3;
+                    }else if(i > 90 && i < 180) {
+                        temperature += 0.3;
+                    }else if(i > 180 && i < 240) {
+                        temperature += 1;
+                    }else if(i > 240 && i < 280) {
+                        temperature  = temperature;
+                    } else {
+                        temperature = temperature - 2;
+                    }
+
+                    gen_relow->add_point_in_graph(i, temperature);
+
+                    u8g2.clearBuffer();
+                    gen_relow->draw_temp_graph(u8g2);
+                    u8g2.sendBuffer();
+                    delay(100);
+                }
+
+                current_view = 0;
             } else {
+                u8g2.clearBuffer();
                 gen_relow->draw_confirmation_screen(u8g2, answer);
+                u8g2.sendBuffer();
             }
-            u8g2.sendBuffer();
 
             if(back_button->is_clicked()) {
                 current_view = 0;
