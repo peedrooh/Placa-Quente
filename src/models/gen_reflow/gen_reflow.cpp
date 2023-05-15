@@ -2,8 +2,13 @@
 #include "assets/headers/headers.h"
 
 #define HEADER_DASHED_BACK 2
-#define ANSWER_X_POS 93
-#define ANSWER_Y_POS 26
+#define CONFIRM_ANSWER_X_POS 93
+#define CONFIRM_ANSWER_Y_POS 26
+
+#define PLOT_START_X 20
+#define PLOT_END_X 125
+#define PLOT_START_Y 3
+#define PLOT_END_Y 50
 
 void GenericReflow::draw_confirmation_screen(U8G2 &u8g2, byte is_yes) {
     // Header Draw
@@ -25,9 +30,9 @@ void GenericReflow::draw_confirmation_screen(U8G2 &u8g2, byte is_yes) {
     u8g2.drawStr(7, 47, "agora?");
 
     if(is_yes) {
-        this->_draw_focus_answer(u8g2, ANSWER_X_POS, ANSWER_Y_POS);
+        this->_draw_focus_answer(u8g2, CONFIRM_ANSWER_X_POS, CONFIRM_ANSWER_Y_POS);
     } else {
-        this->_draw_focus_answer(u8g2, ANSWER_X_POS, ANSWER_Y_POS+15);
+        this->_draw_focus_answer(u8g2, CONFIRM_ANSWER_X_POS, CONFIRM_ANSWER_Y_POS+15);
     }
 
     u8g2.drawStr(96, 27, "Sim");
@@ -47,18 +52,32 @@ void GenericReflow::_draw_focus_answer(U8G2 &u8g2, uint8_t x, uint8_t y) {
 
 void GenericReflow::draw_temp_graph(U8G2 &u8g2) {
     this->_draw_XY_axis(u8g2);
+
+    for(int i = 0; i < 330; i++) {
+        // x ranges from 20 to 125
+        // equal to 0 to 95
+        //    0 ----- 0
+        // time ----- x
+        //  270 ----- 95
+        //  x = time.95/330
+        // But we must add the 20 that we removed in the begining of the calculations, so
+        // x = ((time*95)/330)+20
+        float x = ((this->_points[i][0]*95)/330)+20;
+        float y = 47 - ((this->_points[i][1]*47)/200);
+        u8g2.drawPixel(x, y);
+    }
 }
 
 void GenericReflow::_draw_XY_axis(U8G2 &u8g2) {
 
-    u8g2.drawLine(20, 3, 20, 50);
-    u8g2.drawLine(20, 50, 125, 50);
+    u8g2.drawLine(PLOT_START_X, PLOT_START_Y, PLOT_START_X, PLOT_END_Y);
+    u8g2.drawLine(PLOT_START_X, PLOT_END_Y, PLOT_END_X, PLOT_END_Y);
 
     for(int i = 1; i <= 3; i++) {
-        u8g2.drawLine(20+1+(i*28), 50, 20+1+(i*28), 52);
+        u8g2.drawLine(PLOT_START_X+1+(i*28), PLOT_END_Y, PLOT_START_X+1+(i*28), PLOT_END_Y+2);
     }
     for(int i = 0; i < 4; i++) {
-        u8g2.drawLine(18, 44-(i*10), 20, 44-(i*10));
+        u8g2.drawLine(PLOT_START_X-2, 44-(i*10), PLOT_START_X, 44-(i*10));
     }
 
     u8g2.drawBox(19, 4, 3, 2);
@@ -89,4 +108,19 @@ void GenericReflow::_draw_XY_axis(U8G2 &u8g2) {
     u8g2.drawStr(44, 52, "90");
     u8g2.drawStr(70, 52, "180");
     u8g2.drawStr(97, 52, "270");
+}
+
+void GenericReflow::add_point_in_graph(uint16_t time, float temperature) {
+    if(time < 0) return;
+    if(time > 330) return;
+
+    this->_points[time - 1][0] = time;
+    this->_points[time - 1][1] = temperature;
+}
+
+void GenericReflow::reset_graph() {
+    for(int i = 0; i < 330; i++) {
+        this->_points[i][0] = i;
+        this->_points[i][0] = 0;
+    }
 }
