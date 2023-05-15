@@ -15,6 +15,7 @@ class ConstTemp {
         void _draw_icon(U8G2 &u8g2);
         void _draw_unit(U8G2 &u8g2, byte is_celcius);
         void _draw_focus(U8G2 &u8g2);
+        void _draw_big_digit(U8G2 &u8g2, uint8_t digit_index, uint8_t digit, byte is_bk_white);
         int _temperature;
 };
 

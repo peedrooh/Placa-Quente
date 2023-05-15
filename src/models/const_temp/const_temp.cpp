@@ -8,6 +8,11 @@
 #define HEADER_DASHED_BACK 2
 // #define HEADER_DASHED 3
 
+#define BN_X_POS 40
+#define BN_X_PADDING 5
+#define BN_Y_POS 25
+#define BN_Y_PADDING 3
+
 
 #define celcius_width 24
 #define celcius_height 20
@@ -97,78 +102,51 @@ void ConstTemp::_draw_icon(U8G2 &u8g2) {
 void ConstTemp::_draw_focus(U8G2 &u8g2) {
     u8g2.setBitmapMode(false);
     u8g2.setDrawColor(1);
-    u8g2.drawXBM(40, 25, focus_temp_width, focus_temp_height, focus_temp_bitmap);
+    u8g2.drawXBM(BN_X_POS, BN_Y_POS, focus_temp_width, focus_temp_height, focus_temp_bitmap);
+}
+
+
+void ConstTemp::_draw_big_digit(U8G2 &u8g2, uint8_t digit_index, uint8_t digit, byte is_bk_white) {
+    if(is_bk_white) {
+        u8g2.setBitmapMode(true);
+        u8g2.setDrawColor(1);
+        u8g2.drawBox(BN_X_POS+BN_X_PADDING+(all_big_nums[digit]->big_num_width*digit_index), BN_Y_POS+BN_Y_PADDING, all_big_nums[digit]->big_num_width , all_big_nums[digit]->big_num_height);
+        u8g2.setDrawColor(0);
+        u8g2.drawXBM(BN_X_POS+BN_X_PADDING+(all_big_nums[digit]->big_num_width*digit_index), BN_Y_POS+BN_Y_PADDING, all_big_nums[digit]->big_num_width , all_big_nums[digit]->big_num_height, all_big_nums[digit]->get_big_num());
+    } else {
+        u8g2.setBitmapMode(false);
+        u8g2.setDrawColor(1);
+        u8g2.drawXBM(BN_X_POS+BN_X_PADDING+(all_big_nums[digit]->big_num_width*digit_index), BN_Y_POS+BN_Y_PADDING, all_big_nums[digit]->big_num_width , all_big_nums[digit]->big_num_height, all_big_nums[digit]->get_big_num());
+    }
 }
 
 void ConstTemp::draw(U8G2 &u8g2, uint8_t digit_index, uint8_t counter) {
     this->_draw_header(u8g2);
+    int hundreds = (int) this->_temperature/100;
+    int decimals = (int) (this->_temperature - hundreds*100)/10;
+    int units = (int) (this->_temperature - (hundreds*100) - (decimals*10));
+    int temp[3] = {
+        hundreds,
+        decimals,
+        units
+    };
+    temp[digit_index - 1] = counter;
+    this->set_temperature(temp[2]+(temp[1]*10)+(temp[0]*100));
+
     if(digit_index > 0) {
         this->_draw_focus(u8g2);
+
+        for(int i = 1; i <= 3; i++) {
+            this->_draw_big_digit(u8g2, i - 1, temp[i - 1], i==digit_index);
+        }
+    } else {
+        for(int i = 1; i <= 3; i++) {
+            this->_draw_big_digit(u8g2, i - 1, temp[i - 1], false);
+        }
     }
+
     this->_draw_icon(u8g2);
     this->_draw_unit(u8g2, 1);
-
-
-    if(digit_index == 1) {
-        u8g2.setBitmapMode(true);
-        u8g2.setDrawColor(1);
-        u8g2.drawBox(41+4+(14*0), 25+3, all_big_nums[counter]->big_num_width , all_big_nums[counter]->big_num_height);
-        u8g2.setDrawColor(0);
-        u8g2.drawXBM(41+4+(14*0), 25+3, all_big_nums[counter]->big_num_width , all_big_nums[counter]->big_num_height, all_big_nums[counter]->get_big_num());
-        
-        int hundreds = (int) this->_temperature/100;
-        int decimals = (int) (this->_temperature - hundreds*100)/10;
-        int units = (int) (this->_temperature - (hundreds*100) - (decimals*10));
-
-        u8g2.setBitmapMode(false);
-        u8g2.setDrawColor(1);
-        u8g2.drawXBM(41+4+(14*1), 25+3, all_big_nums[decimals]->big_num_width , all_big_nums[decimals]->big_num_height, all_big_nums[decimals]->get_big_num());
-        u8g2.drawXBM(41+4+(14*2), 25+3, all_big_nums[units]->big_num_width , all_big_nums[units]->big_num_height, all_big_nums[units]->get_big_num());
-
-    } else if (digit_index == 2) {
-        u8g2.setBitmapMode(true);
-        u8g2.setDrawColor(1);
-        u8g2.drawBox(41+4+(14*1), 25+3, all_big_nums[counter]->big_num_width , all_big_nums[counter]->big_num_height);
-        u8g2.setDrawColor(0);
-        u8g2.drawXBM(41+4+(14*1), 25+3, all_big_nums[counter]->big_num_width , all_big_nums[counter]->big_num_height, all_big_nums[counter]->get_big_num());
-
-        int hundreds = (int) this->_temperature/100;
-        int decimals = (int) (this->_temperature - hundreds*100)/10;
-        int units = (int) (this->_temperature - (hundreds*100) - (decimals*10));
-        
-        u8g2.setBitmapMode(false);
-        u8g2.setDrawColor(1);
-        u8g2.drawXBM(41+4+(14*0), 25+3, all_big_nums[hundreds]->big_num_width , all_big_nums[hundreds]->big_num_height, all_big_nums[hundreds]->get_big_num());
-        u8g2.drawXBM(41+4+(14*2), 25+3, all_big_nums[units]->big_num_width , all_big_nums[units]->big_num_height, all_big_nums[units]->get_big_num());
-
-    } else if (digit_index == 3) {
-        u8g2.setBitmapMode(true);
-        u8g2.setDrawColor(1);
-        u8g2.drawBox(41+4+(14*2), 25+3, all_big_nums[counter]->big_num_width , all_big_nums[counter]->big_num_height);
-        u8g2.setDrawColor(0);
-        u8g2.drawXBM(41+4+(14*2), 25+3, all_big_nums[counter]->big_num_width , all_big_nums[counter]->big_num_height, all_big_nums[counter]->get_big_num());
-        
-        int hundreds = (int) this->_temperature/100;
-        int decimals = (int) (this->_temperature - hundreds*100)/10;
-
-        u8g2.setBitmapMode(false);
-        u8g2.setDrawColor(1);
-        u8g2.drawXBM(41+4+(14*0), 25+3, all_big_nums[hundreds]->big_num_width , all_big_nums[hundreds]->big_num_height, all_big_nums[hundreds]->get_big_num());
-        u8g2.drawXBM(41+4+(14*1), 25+3, all_big_nums[decimals]->big_num_width , all_big_nums[decimals]->big_num_height, all_big_nums[decimals]->get_big_num());
-
-        this->set_temperature(counter+(decimals*10)+(hundreds*100));
-
-    } else {
-        u8g2.setBitmapMode(false);
-        u8g2.setDrawColor(1);
-        int hundreds = (int) this->_temperature/100;
-        int decimals = (int) (this->_temperature - hundreds*100)/10;
-        int units = (int) (this->_temperature - (hundreds*100) - (decimals*10));
-        u8g2.drawXBM(41+4+(14*0), 25+3, all_big_nums[hundreds]->big_num_width , all_big_nums[hundreds]->big_num_height, all_big_nums[hundreds]->get_big_num());
-        u8g2.drawXBM(41+4+(14*1), 25+3, all_big_nums[decimals]->big_num_width , all_big_nums[decimals]->big_num_height, all_big_nums[decimals]->get_big_num());
-        u8g2.drawXBM(41+4+(14*2), 25+3, all_big_nums[units]->big_num_width , all_big_nums[units]->big_num_height, all_big_nums[units]->get_big_num());
-
-    }
 }
 
 void ConstTemp::set_temperature(int temperature) {
