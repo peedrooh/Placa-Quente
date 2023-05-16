@@ -3,4 +3,4 @@
 3 - Type the following command: magick mogrify -negate -format xbm *.png
     This will create a bitmap file for each png in the current folder.
 4 - If you want to aggregate all bitmaps in one single file you can use the copy command in your terminal. 
-    For the command prompt in windowsyou can type: copy *.xbm _merged_xbm_files.txt
+    For the command prompt in windows you can type: copy *.xbm _merged_xbm_files.txt
