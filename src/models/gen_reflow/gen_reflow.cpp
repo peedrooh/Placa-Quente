@@ -23,7 +23,7 @@ void GenericReflow::draw_confirmation_screen(U8G2 &u8g2, byte is_yes) {
     u8g2.setDrawColor(1);
     u8g2.setFontPosTop();
     u8g2.setFontDirection(0);
-    u8g2.drawStr(6, 1, "R. Gener.");
+    u8g2.drawStr(6, 0, "R. Gener.");
 
     u8g2.drawStr(7, 23, "Deseja iniciar o");
     u8g2.drawStr(7, 35, "refluxo generico");
