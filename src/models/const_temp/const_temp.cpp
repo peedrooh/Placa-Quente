@@ -79,7 +79,7 @@ void ConstTemp::_draw_header(U8G2 &u8g2) {
     u8g2.setDrawColor(1);
     u8g2.setFontPosTop();
     u8g2.setFontDirection(0);
-    u8g2.drawStr(6, 1, "T. Const");
+    u8g2.drawStr(6, 0, "T. Const");
 }
 
 void ConstTemp::_draw_unit(U8G2 &u8g2, byte is_celcius) {
