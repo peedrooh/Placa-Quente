@@ -4,6 +4,6 @@
 #include "icon.h"
 #include <U8g2lib.h>
 
-extern Icon* all_icons[13];
+extern Icon* all_icons[14];
 
 #endif
