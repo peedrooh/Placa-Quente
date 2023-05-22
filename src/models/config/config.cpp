@@ -15,6 +15,12 @@
 #define BAR_Y_POSITION (50 / (NUM_CONFIG_ITEMS - 1))
 
 
+ConfigItem::ConfigItem(String title, byte is_selected) {
+    this->title = title;
+    this->is_selected = is_selected;
+}
+
+
 void Config::_draw_header(U8G2 &u8g2, byte header_type) {
     // Header Draw
     u8g2.setBitmapMode(false);
@@ -103,4 +109,37 @@ void Config::draw_config_menu(U8G2 &u8g2, int current_config) {
     this->_draw_header(u8g2, 0);
     this->_draw_scroll_bar(u8g2, current_config);
     this->_draw_config_menu_items(u8g2, current_config);
+}
+
+void Config::draw_config_selector(U8G2 &u8g2, int current_config, int current_item) {
+    if(current_item > 2) current_item = 2;
+    if(this->config_items[current_config][2].title == "" && current_item == 2) current_item = 1;
+    // Draw Title
+    u8g2.setBitmapMode(true);
+    u8g2.setFont(u8g2_font_haxrcorp4089_tr);
+    u8g2.setFontRefHeightExtendedText();
+    u8g2.setDrawColor(1);
+    u8g2.setFontPosTop();
+    u8g2.setFontDirection(0);
+    String title = this->_items_titles[current_config];
+    title+=":";
+    u8g2.drawStr(5, 2, title.c_str());
+
+    // Draw Back
+    u8g2.setDrawColor(1);
+    u8g2.drawXBM(112, 51, all_icons[2]->icon_width, all_icons[2]->icon_height, all_icons[2]->get_icon());
+
+    // Draw Focus
+    u8g2.setDrawColor(1);
+    u8g2.drawBox(3, 18+(current_item*16), 107, 13);
+    u8g2.drawLine(3-1, 1+18+(current_item*16), 3-1, 1+18+(current_item*16)+10);
+    u8g2.drawLine(107+3, 1+18+(current_item*16), 107+3, 1+18+(current_item*16)+10);
+
+    // Draw ConfigItem
+    for(int i = 0; i < 3; i++) {
+        u8g2.setDrawColor(1);
+        if(i == current_item) u8g2.setDrawColor(0);
+        if(this->config_items[current_config][i].is_selected) u8g2.drawXBM(4, 18+(i*16), all_icons[13]->icon_width, all_icons[13]->icon_height, all_icons[13]->get_icon());
+        u8g2.drawStr(20, 19+(i*16), this->config_items[current_config][i].title.c_str());
+    }
 }
