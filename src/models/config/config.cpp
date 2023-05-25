@@ -15,12 +15,6 @@
 #define BAR_Y_POSITION (50 / (NUM_CONFIG_ITEMS - 1))
 
 
-ConfigItem::ConfigItem(String title, byte is_selected) {
-    this->title = title;
-    this->is_selected = is_selected;
-}
-
-
 void Config::_draw_header(U8G2 &u8g2, byte header_type) {
     // Header Draw
     u8g2.setBitmapMode(false);

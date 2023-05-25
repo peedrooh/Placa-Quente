@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include "FS.h"
+#include "SPIFFS.h"
 
 // #include "models/menu/menu.h"
 #include "models/rotary_switch/rotary_switch.h"
@@ -9,6 +11,7 @@
 #include "models/gen_reflow/gen_reflow.h"
 #include "models/timer/timer.h"
 #include "models/config/config.h"
+#include "models/config_file/config_file.h"
 
 #include "views/menu/menu_view.h"
 
@@ -38,6 +41,7 @@ ConstTemp* const_temp = new ConstTemp(555);
 GenericReflow* gen_relow = new GenericReflow();
 Timer* timer = new Timer();
 Config* config = new Config();
+ConfigFile* config_file = new ConfigFile();
 
 int click_counter = 0;
 uint8_t current_view = 0;
@@ -50,6 +54,14 @@ void setup(void) {
     r_switch->begin();
     back_button->begin();
     Serial.begin(115200);
+
+    config_file->begin();
+    // config_file->_read_file(config_file->_file_name);
+    config_file->update_config(config_file->get_configs(temp_config)[0], 0);
+    // config_file->update_config(config_file->get_configs(temp_config)[1], 1);
+    // config_file->update_config(config_file->get_configs(temp_config)[2], 0);
+    config_file->_read_file(config_file->_file_name);
+
     // Put current pins state in variables
     pinMode(RS_DT_PIN, INPUT);
     pinMode(RS_CLK_PIN, INPUT);
@@ -64,19 +76,21 @@ byte was_answered = 0;
 float temperature = 20;
 void loop(void) {
     
-    r_switch->turn_detect();
-    if(r_switch->counter > 2) r_switch->counter--;
-    if(r_switch->counter <= -1) r_switch->counter++;
-    if(r_switch->get_switch_state()) {
-        for(int i = 0; i < 3; i++) {
-            config->config_items[2][i].is_selected = false;
-            if(i == r_switch->counter) config->config_items[2][i].is_selected = true;
-        }
-    }
-    u8g2.clearBuffer();
-    Serial.println(r_switch->counter);
-    config->draw_config_selector(u8g2, 2, r_switch->counter);
-    u8g2.sendBuffer();
+
+
+    // r_switch->turn_detect();
+    // if(r_switch->counter > 2) r_switch->counter--;
+    // if(r_switch->counter <= -1) r_switch->counter++;
+    // if(r_switch->get_switch_state()) {
+    //     for(int i = 0; i < 3; i++) {
+    //         config->config_items[2][i].is_selected = false;
+    //         if(i == r_switch->counter) config->config_items[2][i].is_selected = true;
+    //     }
+    // }
+    // u8g2.clearBuffer();
+    // Serial.println(r_switch->counter);
+    // config->draw_config_selector(u8g2, 2, r_switch->counter);
+    // u8g2.sendBuffer();
 
     // switch (current_view) {
     //     case 0:
