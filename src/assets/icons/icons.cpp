@@ -31,6 +31,16 @@ static const unsigned char icon_back_bitmap[] U8X8_PROGMEM = {
 Icon* icon_back = new Icon(icon_back_bitmap, icon_back_width, icon_back_width);
 
 
+#define icon_check_width 11
+#define icon_check_height 13
+static const unsigned char icon_check_bitap[] U8X8_PROGMEM = {
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x80, 0x00, 0x40, 0x00, 
+  0x20, 0x00, 0x32, 0x00, 0x14, 0x00, 0x1C, 0x00, 0x08, 0x00, 0x00, 0x00, 
+  0x00, 0x00, };
+Icon* icon_check = new Icon(icon_check_bitap, icon_back_width, icon_back_width);
+
+
+
 // Custom Reflow
 #define icon_cus_reflow_width 16
 #define icon_cus_reflow_height 16
@@ -133,7 +143,7 @@ Icon* icon_blank = new Icon(icon_blank_bitmap, icon_blank_width, icon_blank_heig
 
 
 // Icons Array
-Icon* all_icons[13] = {
+Icon* all_icons[14] = {
     icon_arrow_left,
     icon_arrow_right,
     icon_back,
@@ -146,5 +156,6 @@ Icon* all_icons[13] = {
     icon_t_cooling, 
     icon_t_heating_1,
     icon_t_heating_2,
-    icon_blank
+    icon_blank,
+    icon_check
 };

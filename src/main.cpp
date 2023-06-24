@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include "FS.h"
+#include "SPIFFS.h"
 
 // #include "models/menu/menu.h"
 #include "models/rotary_switch/rotary_switch.h"
@@ -8,6 +10,8 @@
 #include "models/back_button/back_button.h"
 #include "models/gen_reflow/gen_reflow.h"
 #include "models/timer/timer.h"
+#include "models/config/config.h"
+#include "models/config_file/config_file.h"
 
 #include "views/menu/menu_view.h"
 #include "views/cont_temp/const_temp_view.h"
@@ -37,21 +41,30 @@ BackButton* back_button = new BackButton(BACK_BUTTON);
 
 GenericReflow* gen_relow = new GenericReflow();
 Timer* timer = new Timer();
+Config* config = new Config();
+ConfigFile* config_file = new ConfigFile();
 
 // int click_counter = 0;
 uint8_t current_view = 0;
 byte screen_state = 0;
 
 void setup(void) {
-    
-    // ConstTemp knda(444);
-    // knda.draw(u8g2, 1, 1);
 
     u8g2.begin();
     
     r_switch->begin();
     back_button->begin();
     Serial.begin(115200);
+
+    // config_file->begin();
+    // // config_file->_read_file(config_file->_file_name);
+    // config_file->update_config(config_file->get_configs(load_control)[2], 1);
+    // config_file->update_config(config_file->get_configs(load_control)[1], 1);
+    // config_file->update_config(config_file->get_configs(load_control)[0], 0);
+    // config_file->_read_file(config_file->_file_name);
+    // ConfigItem *item = config_file->get_configs(load_control);
+    // Serial.println(item[1].is_selected);
+
     // Put current pins state in variables
     pinMode(RS_DT_PIN, INPUT);
     pinMode(RS_CLK_PIN, INPUT);
@@ -65,43 +78,21 @@ void setup(void) {
 byte was_answered = 0;
 float temperature = 20;
 void loop(void) {
+    
 
-    // for(int i = 0; i < 13; i++) {
-    //     u8g2.clearBuffer();
-    //     timer->draw_set_time_screen(u8g2, i);
-    //     u8g2.sendBuffer();
-    //     delay(500);
-    // }
 
+    // r_switch->turn_detect();
+    // if(r_switch->counter > 2) r_switch->counter--;
+    // if(r_switch->counter <= -1) r_switch->counter++;
     // if(r_switch->get_switch_state()) {
-        
-    //     uint8_t key = timer->get_key(r_switch->counter);
-    //     timer->set_cursor_index(key, 0);
-    //     if (r_switch->counter > 1 && r_switch->counter < 12) {
-    //         uint8_t temp = timer->get_temp();
-    //         int temp_split_in_digits[3] = {
-    //             temp%10,
-    //             (temp/10)%10,
-    //             temp/100
-    //         };
-    //         if(timer->get_cursor_index() == 0) temp_split_in_digits[0] = key;
-    //         if(timer->get_cursor_index() == 1) temp_split_in_digits[1] = key;
-    //         if(timer->get_cursor_index() == 2 && key < 3) temp_split_in_digits[2] = key;
-
-    //         timer->set_temp((100*temp_split_in_digits[2])+(10*temp_split_in_digits[1])+temp_split_in_digits[0]);
-    //         temp = timer->get_temp();
+    //     for(int i = 0; i < 3; i++) {
+    //         config->config_items[2][i].is_selected = false;
+    //         if(i == r_switch->counter) config->config_items[2][i].is_selected = true;
     //     }
     // }
-    // r_switch->turn_detect();
-    // if(r_switch->counter > 12) r_switch->counter--;
-    // if(r_switch->counter <= -1) r_switch->counter++
-    
-    // double temperature = 100.0;
-
-    // uint8_t* time = timer->get_time();
-    
     // u8g2.clearBuffer();
-    // timer->draw_timer_screen(u8g2, temperature, time);
+    // Serial.println(r_switch->counter);
+    // config->draw_config_selector(u8g2, 2, r_switch->counter);
     // u8g2.sendBuffer();
 
     switch (current_view) {
@@ -266,6 +257,18 @@ void loop(void) {
                 }
             }
         }break;
+
+        case 5:
+            r_switch->turn_detect();
+            if(r_switch->counter >= 3) r_switch->counter = 2;
+            if(r_switch->counter <= -1) r_switch->counter = 0;
+            u8g2.clearBuffer();
+            config->draw_config_menu(u8g2, r_switch->counter);
+            u8g2.sendBuffer();
+            if(back_button->is_clicked()) {
+                current_view--;
+            }
+            break;
 
         default:
             show_menu(current_view, r_switch, u8g2);
