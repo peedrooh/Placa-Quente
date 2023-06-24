@@ -7,7 +7,7 @@ void ConfigFile::begin() {
         return;
     }
     
-    if(this->_spiffs.exists(this->_file_name)) {
+    if(!this->_spiffs.exists(this->_file_name)) {
         this->_spiffs.open(this->_file_name, FILE_WRITE);
         const String *titles = this->get_configs_titles();
         char all_config[1000];
@@ -63,7 +63,7 @@ void ConfigFile::update_config(ConfigItem &config_item, byte updated_config_valu
         return;
     }
 
-    char all_config[file_size];
+    char all_config[file_size+10];
     uint16_t all_config_index = 0;
     char line[50];
     uint16_t line_index = 0;
@@ -74,22 +74,8 @@ void ConfigFile::update_config(ConfigItem &config_item, byte updated_config_valu
         if(letter == 10) {
             line[line_index] = '\n';
             if(
-                line_index == strlen(this->_configs_titles[config_item.config_type].c_str()) && 
-                line[0] == this->_configs_titles[config_item.config_type].c_str()[0]
+                line[2] == config_item.title[0]
             ) {
-                is_next_line = true;
-                // Add Config Title
-                const String title = this->_configs_titles[config_item.config_type];
-                for(int i = 0; i < strlen(title.c_str()); i++) {
-                    all_config[all_config_index] = title[i];
-                    all_config_index++;
-                }
-                all_config[all_config_index] = '\n'; // Skip line
-                all_config_index++;
-
-            } else if(is_next_line) {
-                is_next_line = false;
-
                 for(int i = 0; i < line_index - 1; i++) {
                     all_config[all_config_index] = line[i];
                     all_config_index++;
@@ -115,15 +101,11 @@ void ConfigFile::update_config(ConfigItem &config_item, byte updated_config_valu
 
 
     }
-    // for(int i = 0; i < all_config_index; i++) {
-    //     Serial.print(all_config[i]);
-    // }
     // Write configs
     file = this->_spiffs.open(this->_file_name, FILE_WRITE);
-    int i = 0;
-    while(all_config[i]) {
+    for(int i = 0; i < all_config_index; i++) {
+        // Serial.print(all_config[i]);
         file.print(all_config[i]);
-        i++;
     }
 }
 
