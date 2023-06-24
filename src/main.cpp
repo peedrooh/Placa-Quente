@@ -4,12 +4,13 @@
 // #include "models/menu/menu.h"
 #include "models/rotary_switch/rotary_switch.h"
 #include "assets/big_numbers/big_numbers.h"
-#include "models/const_temp/const_temp.h"
+// #include "models/const_temp/const_temp.h"
 #include "models/back_button/back_button.h"
 #include "models/gen_reflow/gen_reflow.h"
 #include "models/timer/timer.h"
 
 #include "views/menu/menu_view.h"
+#include "views/cont_temp/const_temp_view.h"
 
 #ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
@@ -32,12 +33,12 @@ RotarySwitch* r_switch = new RotarySwitch(RS_DT_PIN, RS_CLK_PIN, RS_SWITCH_PIN);
 BackButton* back_button = new BackButton(BACK_BUTTON);
 
 // Menu* menu = new Menu();
+// ConstTemp* const_temp = new ConstTemp(555);
 
-ConstTemp* const_temp = new ConstTemp(555);
 GenericReflow* gen_relow = new GenericReflow();
 Timer* timer = new Timer();
 
-int click_counter = 0;
+// int click_counter = 0;
 uint8_t current_view = 0;
 byte screen_state = 0;
 
@@ -110,30 +111,31 @@ void loop(void) {
             break;
         
         case 1:
-            if(click_counter > 0) {
-                r_switch->turn_detect();
-                if(r_switch->counter > 9) r_switch->counter--;
-                if(r_switch->counter <= -1) r_switch->counter++;
-            }
-            if(r_switch->get_switch_state()) {
-                int t = const_temp->get_temperature();
-                int hundreds = (int) t/100;
-                int decimals = (int) (t - hundreds*100)/10;
-                int units = (int) (t - (hundreds*100) - (decimals*10));
+            show_const_temp(current_view, r_switch, back_button, u8g2);
+            // if(click_counter > 0) {
+            //     r_switch->turn_detect();
+            //     if(r_switch->counter > 9) r_switch->counter--;
+            //     if(r_switch->counter <= -1) r_switch->counter++;
+            // }
+            // if(r_switch->get_switch_state()) {
+            //     int t = const_temp->get_temperature();
+            //     int hundreds = (int) t/100;
+            //     int decimals = (int) (t - hundreds*100)/10;
+            //     int units = (int) (t - (hundreds*100) - (decimals*10));
 
-                if(click_counter == 2) r_switch->counter = hundreds;
-                if(click_counter == 3) r_switch->counter = decimals;
-                if(click_counter == 0) r_switch->counter = units;
-                click_counter--;
-            }
-            if(click_counter < 0) click_counter = 3;
+            //     if(click_counter == 2) r_switch->counter = hundreds;
+            //     if(click_counter == 3) r_switch->counter = decimals;
+            //     if(click_counter == 0) r_switch->counter = units;
+            //     click_counter--;
+            // }
+            // if(click_counter < 0) click_counter = 3;
 
-            u8g2.clearBuffer();
-            const_temp->draw(u8g2, click_counter, r_switch->counter);
-            u8g2.sendBuffer();
-            if(back_button->is_clicked()) {
-                current_view--;
-            }
+            // u8g2.clearBuffer();
+            // const_temp->draw(u8g2, click_counter, r_switch->counter);
+            // u8g2.sendBuffer();
+            // if(back_button->is_clicked()) {
+            //     current_view--;
+            // }
             break;
         
         case 2:
@@ -269,69 +271,4 @@ void loop(void) {
             show_menu(current_view, r_switch, u8g2);
             break;
     }
-
-    
-
-    // BASIC IMPLEMENTATION OF THE CONSTANT TEMPERATURE VIEW
-    // -----------------------------------------------------
-    // if(click_counter > 0) {
-    //     r_switch->turn_detect();
-    //     if(r_switch->counter >= 9) r_switch->counter--;
-    //     if(r_switch->counter <= 0) r_switch->counter++;
-    // }
-    // if(r_switch->get_switch_state()) {
-    //     click_counter--;
-    // }
-    // if(click_counter < 0) click_counter = 3;
-
-    // u8g2.clearBuffer();
-    // const_temp->draw(u8g2, click_counter, r_switch->counter);
-    // u8g2.sendBuffer();
-    // ----------------------------------------------------
-
-
-    // BASIC IMPLEMETATION OF THE MAIN MENU VIEW
-    // ----------------------------------------------------
-
-    // if(r_switch->get_switch_state()) screen_state = !screen_state;
-    
-    // if(screen_state) {
-    //     switch (r_switch->counter) {
-    //         case 1:
-    //             u8g2.clearBuffer();
-    //             const_temp->draw(u8g2, 0, 0);
-    //             u8g2.sendBuffer();
-    //             break;
-    //         case 2:
-    //             u8g2.clearBuffer();
-    //             u8g2.drawStr(30, 30, "Temporizador");
-    //             u8g2.sendBuffer();
-    //             break;
-    //         case 3:
-    //             u8g2.clearBuffer();
-    //             u8g2.drawStr(30, 30, "Refluxo Genérico");
-    //             u8g2.sendBuffer();
-    //             break;
-    //         case 4:
-    //             u8g2.clearBuffer();
-    //             u8g2.drawStr(30, 30, "Refluxo Personalizado");
-    //             u8g2.sendBuffer();
-    //             break;
-    //         case 5:
-    //             u8g2.clearBuffer();
-    //             u8g2.drawStr(30, 30, "Configuracoes");
-    //             u8g2.sendBuffer();
-    //             break;
-    //     }
-    //     // delay(5000);
-    // } else {
-    //     r_switch->turn_detect();
-
-    //     if(r_switch->counter >= 6) r_switch->counter--;
-    //     if(r_switch->counter <= 0) r_switch->counter++;
-    //     u8g2.clearBuffer();
-    //     menu->draw(u8g2, r_switch->counter);
-    //     u8g2.sendBuffer();
-    // }
-    // ----------------------------------------------------
 };
