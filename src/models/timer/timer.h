@@ -7,8 +7,8 @@ class Timer {
     public:
         Timer();
         void draw_set_time_screen(U8G2 &u8g2, uint8_t keyboard_key_index);
-        void draw_set_temp_screen(U8G2 &u8g2, uint8_t keyboard_key_index);
-        void draw_timer_screen(U8G2 &u8g2, double temperature, uint8_t* time);
+        void draw_set_temp_screen(U8G2 &u8g2, uint8_t keyboard_key_index, byte is_celcius);
+        void draw_timer_screen(U8G2 &u8g2, double temperature, uint8_t min, uint8_t sec, byte is_celcius);
         uint8_t* get_time();
         void set_time(uint8_t minutes, uint8_t seconds);
         uint8_t get_temp();

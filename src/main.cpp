@@ -3,18 +3,21 @@
 #include "FS.h"
 #include "SPIFFS.h"
 
+
 // #include "models/menu/menu.h"
+// #include "models/const_temp/const_temp.h"
+// #include "models/timer/timer.h"
 #include "models/rotary_switch/rotary_switch.h"
 #include "assets/big_numbers/big_numbers.h"
-// #include "models/const_temp/const_temp.h"
 #include "models/back_button/back_button.h"
 #include "models/gen_reflow/gen_reflow.h"
-#include "models/timer/timer.h"
 #include "models/config/config.h"
 #include "models/config_file/config_file.h"
+#include "models/temp_sensor/temp_sensor.h"
 
 #include "views/menu/menu_view.h"
 #include "views/cont_temp/const_temp_view.h"
+#include "views/timer/timer_view.h"
 
 #ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
@@ -26,8 +29,8 @@
 #define RS_SWITCH_PIN 33
 #define RS_DT_PIN 25
 #define RS_CLK_PIN 26
-
 #define BACK_BUTTON 5
+#define OLED_I2C_ADDR 0x3C
 
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
@@ -38,9 +41,9 @@ BackButton* back_button = new BackButton(BACK_BUTTON);
 
 // Menu* menu = new Menu();
 // ConstTemp* const_temp = new ConstTemp(555);
-
+TempSensor* temp_sensor = new TempSensor();
 GenericReflow* gen_relow = new GenericReflow();
-Timer* timer = new Timer();
+// Timer* timer = new Timer();
 Config* config = new Config();
 ConfigFile* config_file = new ConfigFile();
 
@@ -49,12 +52,15 @@ uint8_t current_view = 0;
 byte screen_state = 0;
 
 void setup(void) {
+    Serial.begin(115200);
 
+    // temp_sensor->begin();
+
+    u8g2.setI2CAddress(2*0x3C);
     u8g2.begin();
-    
+        
     r_switch->begin();
     back_button->begin();
-    Serial.begin(115200);
 
     // config_file->begin();
     // // config_file->_read_file(config_file->_file_name);
@@ -77,9 +83,11 @@ void setup(void) {
 }
 byte was_answered = 0;
 float temperature = 20;
+double current_temperature;
 void loop(void) {
-    
 
+    // show_const_temp(current_view, temp_sensor, r_switch, back_button, u8g2, config);
+    
 
     // r_switch->turn_detect();
     // if(r_switch->counter > 2) r_switch->counter--;
@@ -102,96 +110,73 @@ void loop(void) {
             break;
         
         case 1:
-            show_const_temp(current_view, r_switch, back_button, u8g2);
-            // if(click_counter > 0) {
-            //     r_switch->turn_detect();
-            //     if(r_switch->counter > 9) r_switch->counter--;
-            //     if(r_switch->counter <= -1) r_switch->counter++;
-            // }
-            // if(r_switch->get_switch_state()) {
-            //     int t = const_temp->get_temperature();
-            //     int hundreds = (int) t/100;
-            //     int decimals = (int) (t - hundreds*100)/10;
-            //     int units = (int) (t - (hundreds*100) - (decimals*10));
-
-            //     if(click_counter == 2) r_switch->counter = hundreds;
-            //     if(click_counter == 3) r_switch->counter = decimals;
-            //     if(click_counter == 0) r_switch->counter = units;
-            //     click_counter--;
-            // }
-            // if(click_counter < 0) click_counter = 3;
-
-            // u8g2.clearBuffer();
-            // const_temp->draw(u8g2, click_counter, r_switch->counter);
-            // u8g2.sendBuffer();
-            // if(back_button->is_clicked()) {
-            //     current_view--;
-            // }
+            show_const_temp(current_view, temp_sensor, r_switch, back_button, u8g2, config);
             break;
         
         case 2:
                    
-            r_switch->turn_detect();
-            if(r_switch->counter > 12) r_switch->counter--;
-            if(r_switch->counter <= -1) r_switch->counter++;
-            if(timer->get_timer_screen() == 0) {
-                if(back_button->is_clicked()) current_view = 0;
-                if(r_switch->get_switch_state()) {
-                    if(r_switch->counter == 12) timer->set_timer_screen(1);
-                    uint8_t key = timer->get_key(r_switch->counter);
-                    timer->set_cursor_index(key, 1);
-                    if (r_switch->counter > 1 && r_switch->counter < 12) {
-                        uint8_t* sec_min = timer->get_time();
-                        int time_split_in_digits[4] = {
-                            sec_min[0]%10,
-                            sec_min[0]/10,
-                            sec_min[1]%10,
-                            sec_min[1]/10
-                        };
-                        if(timer->get_cursor_index() == 0) time_split_in_digits[0] = key;
-                        if(timer->get_cursor_index() == 1 && key < 6) time_split_in_digits[1] = key;
-                        if(timer->get_cursor_index() == 2) time_split_in_digits[2] = key;
-                        if(timer->get_cursor_index() == 3 && key < 6) time_split_in_digits[3] = key;
+            // r_switch->turn_detect();
+            // if(r_switch->counter > 12) r_switch->counter--;
+            // if(r_switch->counter <= -1) r_switch->counter++;
+            // if(timer->get_timer_screen() == 0) {
+            //     if(back_button->is_clicked()) current_view = 0;
+            //     if(r_switch->get_switch_state()) {
+            //         if(r_switch->counter == 12) timer->set_timer_screen(1);
+            //         uint8_t key = timer->get_key(r_switch->counter);
+            //         timer->set_cursor_index(key, 1);
+            //         if (r_switch->counter > 1 && r_switch->counter < 12) {
+            //             uint8_t* sec_min = timer->get_time();
+            //             int time_split_in_digits[4] = {
+            //                 sec_min[0]%10,
+            //                 sec_min[0]/10,
+            //                 sec_min[1]%10,
+            //                 sec_min[1]/10
+            //             };
+            //             if(timer->get_cursor_index() == 0) time_split_in_digits[0] = key;
+            //             if(timer->get_cursor_index() == 1 && key < 6) time_split_in_digits[1] = key;
+            //             if(timer->get_cursor_index() == 2) time_split_in_digits[2] = key;
+            //             if(timer->get_cursor_index() == 3 && key < 6) time_split_in_digits[3] = key;
 
-                        timer->set_time(time_split_in_digits[2] + (10*time_split_in_digits[3]), time_split_in_digits[0] + (10*time_split_in_digits[1]));
-                    }
-                } 
-                u8g2.clearBuffer();
-                timer->draw_set_time_screen(u8g2, r_switch->counter);
-                u8g2.sendBuffer();
-            } else if(timer->get_timer_screen() == 1) {
-                if(back_button->is_clicked()) timer->set_timer_screen(0);
-                if(r_switch->get_switch_state()) {
-                    if(r_switch->counter == 12) timer->set_timer_screen(2);
-                    uint8_t key = timer->get_key(r_switch->counter);
-                    timer->set_cursor_index(key, 0);
-                    if (r_switch->counter > 1 && r_switch->counter < 12) {
-                        uint8_t temp = timer->get_temp();
-                        int temp_split_in_digits[3] = {
-                            temp%10,
-                            (temp/10)%10,
-                            temp/100
-                        };
-                        if(timer->get_cursor_index() == 0) temp_split_in_digits[0] = key;
-                        if(timer->get_cursor_index() == 1) temp_split_in_digits[1] = key;
-                        if(timer->get_cursor_index() == 2 && key < 3) temp_split_in_digits[2] = key;
+            //             timer->set_time(time_split_in_digits[2] + (10*time_split_in_digits[3]), time_split_in_digits[0] + (10*time_split_in_digits[1]));
+            //         }
+            //     } 
+            //     u8g2.clearBuffer();
+            //     timer->draw_set_time_screen(u8g2, r_switch->counter);
+            //     u8g2.sendBuffer();
+            // } else if(timer->get_timer_screen() == 1) {
+            //     if(back_button->is_clicked()) timer->set_timer_screen(0);
+            //     if(r_switch->get_switch_state()) {
+            //         if(r_switch->counter == 12) timer->set_timer_screen(2);
+            //         uint8_t key = timer->get_key(r_switch->counter);
+            //         timer->set_cursor_index(key, 0);
+            //         if (r_switch->counter > 1 && r_switch->counter < 12) {
+            //             uint8_t temp = timer->get_temp();
+            //             int temp_split_in_digits[3] = {
+            //                 temp%10,
+            //                 (temp/10)%10,
+            //                 temp/100
+            //             };
+            //             if(timer->get_cursor_index() == 0) temp_split_in_digits[0] = key;
+            //             if(timer->get_cursor_index() == 1) temp_split_in_digits[1] = key;
+            //             if(timer->get_cursor_index() == 2 && key < 3) temp_split_in_digits[2] = key;
 
-                        timer->set_temp((100*temp_split_in_digits[2])+(10*temp_split_in_digits[1])+temp_split_in_digits[0]);
-                    }
-                }
-                u8g2.clearBuffer();
-                timer->draw_set_temp_screen(u8g2, r_switch->counter);
-                u8g2.sendBuffer();
-            } else if(timer->get_timer_screen() == 2) {
-                if(back_button->is_clicked()) current_view = 0;
-                double temperature = 100.0;
+            //             timer->set_temp((100*temp_split_in_digits[2])+(10*temp_split_in_digits[1])+temp_split_in_digits[0]);
+            //         }
+            //     }
+            //     u8g2.clearBuffer();
+            //     timer->draw_set_temp_screen(u8g2, r_switch->counter);
+            //     u8g2.sendBuffer();
+            // } else if(timer->get_timer_screen() == 2) {
+            //     if(back_button->is_clicked()) current_view = 0;
+            //     double temperature = 100.0;
 
-                uint8_t* time = timer->get_time();
+            //     uint8_t* time = timer->get_time();
                 
-                u8g2.clearBuffer();
-                timer->draw_timer_screen(u8g2, temperature, time);
-                u8g2.sendBuffer();
-            }
+            //     u8g2.clearBuffer();
+            //     timer->draw_timer_screen(u8g2, temperature, time);
+            //     u8g2.sendBuffer();
+            // }
+            show_timer(current_view, temp_sensor, r_switch, back_button, u8g2, config);
             
             break;
         

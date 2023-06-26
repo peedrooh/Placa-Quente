@@ -93,10 +93,14 @@ void ConstTemp::_draw_unit(U8G2 &u8g2, byte is_celcius) {
 }
 
 
-void ConstTemp::_draw_icon(U8G2 &u8g2) {
+void ConstTemp::_draw_icon(U8G2 &u8g2, byte is_heating) {
     u8g2.setBitmapMode(false);
     u8g2.setDrawColor(1);
-    u8g2.drawXBM(15, 32, all_icons[8]->icon_width, all_icons[8]->icon_height, all_icons[8]->get_icon());
+    if(is_heating) {
+        u8g2.drawXBM(15, 32, all_icons[8]->icon_width, all_icons[8]->icon_height, all_icons[8]->get_icon());
+    } else {
+        u8g2.drawXBM(15, 32, all_icons[10]->icon_width, all_icons[10]->icon_height, all_icons[10]->get_icon());
+    }
 }
 
 void ConstTemp::_draw_focus(U8G2 &u8g2) {
@@ -120,7 +124,7 @@ void ConstTemp::_draw_big_digit(U8G2 &u8g2, uint8_t digit_index, uint8_t digit, 
     }
 }
 
-void ConstTemp::draw(U8G2 &u8g2, uint8_t digit_index, uint8_t counter) {
+void ConstTemp::draw(U8G2 &u8g2, uint8_t digit_index, uint8_t counter, byte is_heating, Config* &config) {
     this->_draw_header(u8g2);
     int hundreds = (int) this->_temperature/100;
     int decimals = (int) (this->_temperature - hundreds*100)/10;
@@ -145,8 +149,9 @@ void ConstTemp::draw(U8G2 &u8g2, uint8_t digit_index, uint8_t counter) {
         }
     }
 
-    this->_draw_icon(u8g2);
-    this->_draw_unit(u8g2, 1);
+    
+    this->_draw_icon(u8g2, is_heating);
+    this->_draw_unit(u8g2, config->config_items[0][0].is_selected);
 }
 
 void ConstTemp::set_temperature(int temperature) {

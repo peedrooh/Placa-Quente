@@ -19,8 +19,8 @@ static const unsigned char farenheight_normal_bitmap[] U8X8_PROGMEM = {
 
 Timer::Timer() {
     this->_cursor_index = 0;
-    this->set_time(5, 25);
-    this->set_temp(uint8_t(321));
+    this->set_time(1, 30);
+    this->set_temp(100);
     this->set_timer_screen(0);
 }
 
@@ -131,7 +131,7 @@ void Timer::draw_set_time_screen(U8G2 &u8g2, uint8_t keyboard_key_index) {
     this->_draw_keyboard(u8g2, keyboard_key_index);
 }
 
-void Timer::draw_set_temp_screen(U8G2 &u8g2, uint8_t keyboard_key_index) {
+void Timer::draw_set_temp_screen(U8G2 &u8g2, uint8_t keyboard_key_index, byte is_celcius) {
     this->_draw_message(u8g2, "Digite a temperatura:");
 
     // Draw Highlight    
@@ -147,7 +147,11 @@ void Timer::draw_set_temp_screen(U8G2 &u8g2, uint8_t keyboard_key_index) {
     u8g2.drawLine(78, 20, 78, 21);
     u8g2.drawLine(79, 22, 82, 22);
     u8g2.drawLine(83, 20, 83, 21);
-    u8g2.drawStr(84, 21, "F");
+    if(is_celcius) {
+        u8g2.drawStr(84, 21, "C");
+    } else {
+        u8g2.drawStr(84, 21, "F");
+    }
     
 
     // Draw set temperature
@@ -173,7 +177,7 @@ void Timer::draw_set_temp_screen(U8G2 &u8g2, uint8_t keyboard_key_index) {
     this->_draw_keyboard(u8g2, keyboard_key_index);
 }
 
-void Timer::draw_timer_screen(U8G2 &u8g2, double temperature, uint8_t* time) {
+void Timer::draw_timer_screen(U8G2 &u8g2, double temperature, uint8_t min, uint8_t sec, byte is_celcius) {
     // Header Draw
     u8g2.setBitmapMode(false);
     u8g2.setDrawColor(1);
@@ -191,7 +195,15 @@ void Timer::draw_timer_screen(U8G2 &u8g2, double temperature, uint8_t* time) {
     // Draw circle
     u8g2.drawCircle(13+21, 18+21, 21);
     u8g2.drawCircle(13+21, 18+21, 20);
-    u8g2.drawDisc(13+21, 18+21, 16, 20);
+
+    uint8_t* total_time_array = this->get_time();
+    uint8_t total_time = total_time_array[0] + (total_time_array[1] * 60);
+
+    uint8_t curr_time = sec + (min * 60);
+
+    float time_percentage = (float)curr_time/total_time;
+
+    u8g2.drawDisc(13+21, 18+21, 20*(1-time_percentage));
 
     // Draw Temperature
     uint8_t temp_unit = int(temperature)%10;
@@ -201,17 +213,21 @@ void Timer::draw_timer_screen(U8G2 &u8g2, double temperature, uint8_t* time) {
     u8g2.drawXBM(75, 23, all_numbers[temp_hun]->number_width, all_numbers[temp_hun]->number_height, all_numbers[temp_hun]->get_number());
     u8g2.drawXBM(75+ all_numbers[temp_dec]->number_width, 23, all_numbers[temp_dec]->number_width, all_numbers[temp_dec]->number_height, all_numbers[temp_dec]->get_number());
     u8g2.drawXBM(75 + (2*all_numbers[temp_unit]->number_width), 23, all_numbers[temp_unit]->number_width, all_numbers[temp_unit]->number_height, all_numbers[temp_unit]->get_number());
-    u8g2.drawXBM(75 + (3*all_numbers[4]->number_width)+1, 23, celcius_normal_width, celcius_normal_height, celcius_normal_bitmap);
+    if(is_celcius) {
+        u8g2.drawXBM(75 + (3*all_numbers[4]->number_width)+1, 23, celcius_normal_width, celcius_normal_height, celcius_normal_bitmap);
+    } else {
+        u8g2.drawXBM(75 + (3*all_numbers[4]->number_width)+1, 23, farenheight_normal_width, farenheight_normal_height, farenheight_normal_bitmap);
+    }
     
     // Draw Time
     // Draw Separator
     u8g2.drawBox(75+(2*all_numbers[4]->number_width)+4, 23+22+2, 2, 2);
     u8g2.drawBox(75+(2*all_numbers[4]->number_width)+4, 23+22+6, 2, 2);
 
-    u8g2.drawXBM(75, 23+22, all_numbers[time[1]/10]->number_width, all_numbers[time[1]/10]->number_height, all_numbers[time[1]/10]->get_number());
-    u8g2.drawXBM(75+all_numbers[time[1]%10]->number_width, 23+22, all_numbers[time[1]%10]->number_width, all_numbers[time[1]%10]->number_height, all_numbers[time[1]%10]->get_number());
-    u8g2.drawXBM(75+(2*all_numbers[time[0]/10]->number_width)+8, 23+22, all_numbers[time[0]/10]->number_width, all_numbers[time[0]/10]->number_height, all_numbers[time[0]/10]->get_number());
-    u8g2.drawXBM(75+(3*all_numbers[time[0]%10]->number_width)+8, 23+22, all_numbers[time[0]%10]->number_width, all_numbers[time[0]%10]->number_height, all_numbers[time[0]%10]->get_number());
+    u8g2.drawXBM(75, 23+22, all_numbers[min/10]->number_width, all_numbers[min/10]->number_height, all_numbers[min/10]->get_number());
+    u8g2.drawXBM(75+all_numbers[min%10]->number_width, 23+22, all_numbers[min%10]->number_width, all_numbers[min%10]->number_height, all_numbers[min%10]->get_number());
+    u8g2.drawXBM(75+(2*all_numbers[sec/10]->number_width)+8, 23+22, all_numbers[sec/10]->number_width, all_numbers[sec/10]->number_height, all_numbers[sec/10]->get_number());
+    u8g2.drawXBM(75+(3*all_numbers[sec%10]->number_width)+8, 23+22, all_numbers[sec%10]->number_width, all_numbers[sec%10]->number_height, all_numbers[sec%10]->get_number());
 }
 
 
@@ -235,7 +251,7 @@ void Timer::set_cursor_index(uint8_t keyboard_key, byte is_set_time) {
 uint8_t* Timer::get_time() {
     static uint8_t time[2];
     time[0] = this->_seconds;
-    time[1] = this-> _minutes;
+    time[1] = this->_minutes;
     return time;
 }
 
