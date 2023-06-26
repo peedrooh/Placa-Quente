@@ -16,12 +16,12 @@ double previous_time = 0;
 
 double duty_cycle;
 
-int set_temp = 0;
+int set_temp = const_temp->get_temperature();
 float curr_temp = 0.0;
 
 extern void show_const_temp(uint8_t &current_view, TempSensor* &temp_sensor, RotarySwitch* &r_switch, BackButton* &back_button, U8G2 &u8g2, Config* &config) {
     u8g2.clearBuffer();
-    const_temp->draw(u8g2, click_counter, r_switch->counter, 1, config);
+    const_temp->draw(u8g2, click_counter, r_switch->counter, set_temp - 5 > curr_temp, config);
     u8g2.sendBuffer();
     
     while(click_counter == 0) {

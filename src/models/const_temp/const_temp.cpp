@@ -97,9 +97,9 @@ void ConstTemp::_draw_icon(U8G2 &u8g2, byte is_heating) {
     u8g2.setBitmapMode(false);
     u8g2.setDrawColor(1);
     if(is_heating) {
-        u8g2.drawXBM(15, 32, all_icons[8]->icon_width, all_icons[8]->icon_height, all_icons[8]->get_icon());
-    } else {
         u8g2.drawXBM(15, 32, all_icons[10]->icon_width, all_icons[10]->icon_height, all_icons[10]->get_icon());
+    } else {
+        u8g2.drawXBM(15, 32, all_icons[8]->icon_width, all_icons[8]->icon_height, all_icons[8]->get_icon());
     }
 }
 

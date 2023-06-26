@@ -18,6 +18,7 @@
 #include "views/menu/menu_view.h"
 #include "views/cont_temp/const_temp_view.h"
 #include "views/timer/timer_view.h"
+#include "views/gen_reflow/gen_reflow_view.h"
 
 #ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
@@ -41,8 +42,8 @@ BackButton* back_button = new BackButton(BACK_BUTTON);
 
 // Menu* menu = new Menu();
 // ConstTemp* const_temp = new ConstTemp(555);
+// GenericReflow* gen_relow = new GenericReflow();
 TempSensor* temp_sensor = new TempSensor();
-GenericReflow* gen_relow = new GenericReflow();
 // Timer* timer = new Timer();
 Config* config = new Config();
 ConfigFile* config_file = new ConfigFile();
@@ -81,8 +82,10 @@ void setup(void) {
     // Set the Back button pin to input
     pinMode(BACK_BUTTON, INPUT);
 }
-byte was_answered = 0;
-float temperature = 20;
+// byte was_answered = 0;
+// float temperature = 20;
+byte config_screen = 0;
+uint8_t selected_config = 0;
 double current_temperature;
 void loop(void) {
 
@@ -99,13 +102,11 @@ void loop(void) {
     //     }
     // }
     // u8g2.clearBuffer();
-    // Serial.println(r_switch->counter);
     // config->draw_config_selector(u8g2, 2, r_switch->counter);
     // u8g2.sendBuffer();
 
     switch (current_view) {
         case 0:
-            was_answered = 0;
             show_menu(current_view, r_switch, u8g2);
             break;
         
@@ -114,144 +115,40 @@ void loop(void) {
             break;
         
         case 2:
-                   
-            // r_switch->turn_detect();
-            // if(r_switch->counter > 12) r_switch->counter--;
-            // if(r_switch->counter <= -1) r_switch->counter++;
-            // if(timer->get_timer_screen() == 0) {
-            //     if(back_button->is_clicked()) current_view = 0;
-            //     if(r_switch->get_switch_state()) {
-            //         if(r_switch->counter == 12) timer->set_timer_screen(1);
-            //         uint8_t key = timer->get_key(r_switch->counter);
-            //         timer->set_cursor_index(key, 1);
-            //         if (r_switch->counter > 1 && r_switch->counter < 12) {
-            //             uint8_t* sec_min = timer->get_time();
-            //             int time_split_in_digits[4] = {
-            //                 sec_min[0]%10,
-            //                 sec_min[0]/10,
-            //                 sec_min[1]%10,
-            //                 sec_min[1]/10
-            //             };
-            //             if(timer->get_cursor_index() == 0) time_split_in_digits[0] = key;
-            //             if(timer->get_cursor_index() == 1 && key < 6) time_split_in_digits[1] = key;
-            //             if(timer->get_cursor_index() == 2) time_split_in_digits[2] = key;
-            //             if(timer->get_cursor_index() == 3 && key < 6) time_split_in_digits[3] = key;
-
-            //             timer->set_time(time_split_in_digits[2] + (10*time_split_in_digits[3]), time_split_in_digits[0] + (10*time_split_in_digits[1]));
-            //         }
-            //     } 
-            //     u8g2.clearBuffer();
-            //     timer->draw_set_time_screen(u8g2, r_switch->counter);
-            //     u8g2.sendBuffer();
-            // } else if(timer->get_timer_screen() == 1) {
-            //     if(back_button->is_clicked()) timer->set_timer_screen(0);
-            //     if(r_switch->get_switch_state()) {
-            //         if(r_switch->counter == 12) timer->set_timer_screen(2);
-            //         uint8_t key = timer->get_key(r_switch->counter);
-            //         timer->set_cursor_index(key, 0);
-            //         if (r_switch->counter > 1 && r_switch->counter < 12) {
-            //             uint8_t temp = timer->get_temp();
-            //             int temp_split_in_digits[3] = {
-            //                 temp%10,
-            //                 (temp/10)%10,
-            //                 temp/100
-            //             };
-            //             if(timer->get_cursor_index() == 0) temp_split_in_digits[0] = key;
-            //             if(timer->get_cursor_index() == 1) temp_split_in_digits[1] = key;
-            //             if(timer->get_cursor_index() == 2 && key < 3) temp_split_in_digits[2] = key;
-
-            //             timer->set_temp((100*temp_split_in_digits[2])+(10*temp_split_in_digits[1])+temp_split_in_digits[0]);
-            //         }
-            //     }
-            //     u8g2.clearBuffer();
-            //     timer->draw_set_temp_screen(u8g2, r_switch->counter);
-            //     u8g2.sendBuffer();
-            // } else if(timer->get_timer_screen() == 2) {
-            //     if(back_button->is_clicked()) current_view = 0;
-            //     double temperature = 100.0;
-
-            //     uint8_t* time = timer->get_time();
-                
-            //     u8g2.clearBuffer();
-            //     timer->draw_timer_screen(u8g2, temperature, time);
-            //     u8g2.sendBuffer();
-            // }
             show_timer(current_view, temp_sensor, r_switch, back_button, u8g2, config);
-            
             break;
         
-        case 3: {
-            byte answer = 0;
-
-            if(!was_answered) {
-                r_switch->turn_detect();
-                answer = 0;
-                if(r_switch->counter % 2) {
-                    answer = 1;
-                }
-            } 
-
-            if(was_answered) {
-                temperature = 0;
-                gen_relow->reset_graph();
-                u8g2.clearBuffer();
-                gen_relow->draw_temp_graph(u8g2);
-                u8g2.sendBuffer();
-
-
-                for(int i = 0; i < 330; i++) {
-                    if(back_button->is_clicked()) {
-                        current_view = 0;
-                        break;
-                    }
-                    if(i < 90) {
-                        temperature += 1.3;
-                    }else if(i > 90 && i < 180) {
-                        temperature += 0.3;
-                    }else if(i > 180 && i < 240) {
-                        temperature += 1;
-                    }else if(i > 240 && i < 280) {
-                        temperature  = temperature;
-                    } else {
-                        temperature = temperature - 2;
-                    }
-
-                    gen_relow->add_point_in_graph(i, temperature);
-
-                    u8g2.clearBuffer();
-                    gen_relow->draw_temp_graph(u8g2);
-                    u8g2.sendBuffer();
-                    delay(100);
-                }
-                delay(3000);
-                current_view = 0;
-            } else {
-                u8g2.clearBuffer();
-                gen_relow->draw_confirmation_screen(u8g2, answer);
-                u8g2.sendBuffer();
-            }
-
-            if(back_button->is_clicked()) {
-                current_view = 0;
-            }
-            if(r_switch->get_switch_state()) {
-                if(answer == 0 && !was_answered) {
-                    current_view = 0;
-                } else {
-                    was_answered = 1;
-                }
-            }
-        }break;
+        case 3: 
+            show_gen_reflow(current_view, temp_sensor, r_switch, back_button, u8g2, config);
+            break;
 
         case 5:
-            r_switch->turn_detect();
-            if(r_switch->counter >= 3) r_switch->counter = 2;
-            if(r_switch->counter <= -1) r_switch->counter = 0;
-            u8g2.clearBuffer();
-            config->draw_config_menu(u8g2, r_switch->counter);
-            u8g2.sendBuffer();
-            if(back_button->is_clicked()) {
-                current_view--;
+            
+            if(config_screen == 0) {
+                r_switch->turn_detect();
+                if(r_switch->counter >= 3) r_switch->counter = 2;
+                if(r_switch->counter <= -1) r_switch->counter = 0;
+                selected_config = r_switch->counter;
+                u8g2.clearBuffer();
+                config->draw_config_menu(u8g2, r_switch->counter);
+                u8g2.sendBuffer();
+                if(r_switch->get_switch_state()) config_screen = 1;
+                if(back_button->is_clicked()) current_view = 0;
+
+            } else {
+                r_switch->turn_detect();
+                if(r_switch->counter > 2) r_switch->counter--;
+                if(r_switch->counter <= -1) r_switch->counter++;
+                if(r_switch->get_switch_state()) {
+                    for(int i = 0; i < 3; i++) {
+                        config->config_items[selected_config][i].is_selected = false;
+                        if(i == r_switch->counter) config->config_items[selected_config][i].is_selected = true;
+                    }
+                }
+                u8g2.clearBuffer();
+                config->draw_config_selector(u8g2, selected_config, r_switch->counter);
+                u8g2.sendBuffer();
+                if(back_button->is_clicked()) config_screen = 0;
             }
             break;
 
