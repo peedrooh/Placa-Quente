@@ -3,7 +3,7 @@
 
 ConstTemp* const_temp = new ConstTemp(80);
 HeatPlate* heat_plate_ct = new HeatPlate();
-PIDController* pid_ct = new PIDController(0.5, 0.1, 0.2, 100, 0, 100);
+PIDController* pid_ct = new PIDController(2, 0.1, 0.2, 100, 0, 100);
 
 
 int click_counter = 0;
@@ -36,9 +36,10 @@ extern void show_const_temp(uint8_t &current_view, TempSensor* &temp_sensor, Rot
         set_temp = const_temp->get_temperature();
         pid_ct->setSetpoint(set_temp);
         // curr_temp = temp_sensor->read_temp(config->config_items[0][0].is_selected);
-        curr_temp = 25;
+        curr_temp = temp_sensor->read_temp(1);
+        // curr_temp = 25;
         if(set_temp - 5 > curr_temp) {
-            duty_cycle =100;
+            duty_cycle = 100;
         } else {
             duty_cycle = pid_ct->compute(curr_temp);
         }

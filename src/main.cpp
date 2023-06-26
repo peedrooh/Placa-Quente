@@ -42,10 +42,10 @@ uint8_t current_view = 0;
 void setup(void) {
     Serial.begin(115200);
 
-    // temp_sensor->begin();
+    temp_sensor->begin();
 
-    u8g2.setI2CAddress(2*0x3C);
-    u8g2.begin();
+    // u8g2.setI2CAddress(2*0x3C);
+    // u8g2.begin();
         
     r_switch->begin();
     back_button->begin();
@@ -72,31 +72,31 @@ void setup(void) {
 
 void loop(void) {
 
-    // show_const_temp(current_view, temp_sensor, r_switch, back_button, u8g2, config);
+    show_const_temp(current_view, temp_sensor, r_switch, back_button, u8g2, config);
 
-    switch (current_view) {
-        case 0:
-            show_menu(current_view, r_switch, u8g2);
-            break;
+    // switch (current_view) {
+    //     case 0:
+    //         show_menu(current_view, r_switch, u8g2);
+    //         break;
         
-        case 1:
-            show_const_temp(current_view, temp_sensor, r_switch, back_button, u8g2, config);
-            break;
+    //     case 1:
+    //         show_const_temp(current_view, temp_sensor, r_switch, back_button, u8g2, config);
+    //         break;
         
-        case 2:
-            show_timer(current_view, temp_sensor, r_switch, back_button, u8g2, config);
-            break;
+    //     case 2:
+    //         show_timer(current_view, temp_sensor, r_switch, back_button, u8g2, config);
+    //         break;
         
-        case 3: 
-            show_gen_reflow(current_view, temp_sensor, r_switch, back_button, u8g2, config);
-            break;
+    //     case 3: 
+    //         show_gen_reflow(current_view, temp_sensor, r_switch, back_button, u8g2, config);
+    //         break;
 
-        case 5:
-            show_config(current_view, r_switch, back_button, u8g2, config);
-            break;
+    //     case 5:
+    //         show_config(current_view, r_switch, back_button, u8g2, config);
+    //         break;
 
-        default:
-            show_menu(current_view, r_switch, u8g2);
-            break;
-    }
+    //     default:
+    //         show_menu(current_view, r_switch, u8g2);
+    //         break;
+    // }
 };
