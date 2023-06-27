@@ -19,10 +19,13 @@ double duty_cycle;
 int set_temp = const_temp->get_temperature();
 float curr_temp = 0.0;
 
-extern void show_const_temp(uint8_t &current_view, TempSensor* &temp_sensor, RotarySwitch* &r_switch, BackButton* &back_button, U8G2 &u8g2, Config* &config) {
+extern void show_const_temp(uint8_t &current_view, Adafruit_MLX90614 &temp_sensor, RotarySwitch* &r_switch, BackButton* &back_button, U8G2 &u8g2, Config* &config) {
     u8g2.clearBuffer();
     const_temp->draw(u8g2, click_counter, r_switch->counter, set_temp - 5 > curr_temp, config);
     u8g2.sendBuffer();
+    set_temp = const_temp->get_temperature();
+    pid_ct->setSetpoint(set_temp);
+    pid_ct->resetVars();
     
     while(click_counter == 0) {
         if(r_switch->get_switch_state()) {
@@ -33,20 +36,23 @@ extern void show_const_temp(uint8_t &current_view, TempSensor* &temp_sensor, Rot
             current_view--;
             return;
         }
-        set_temp = const_temp->get_temperature();
-        pid_ct->setSetpoint(set_temp);
-        // curr_temp = temp_sensor->read_temp(config->config_items[0][0].is_selected);
-        curr_temp = temp_sensor->read_temp(1);
-        // curr_temp = 25;
+        if(config->config_items[0][0].is_selected) {
+            curr_temp = temp_sensor.readObjectTempC();
+        } else {
+            curr_temp = temp_sensor.readObjectTempF();
+        }
+        
         if(set_temp - 5 > curr_temp) {
             duty_cycle = 100;
         } else {
             duty_cycle = pid_ct->compute(curr_temp);
         }
-        Serial.print("D:");
-        Serial.print(duty_cycle);
-        Serial.print("    T:");
-        Serial.println(curr_temp);
+        // Serial.print("D:");
+        // Serial.print(duty_cycle);
+        // Serial.print("    T:"); 
+        // Serial.print(curr_temp);
+        // Serial.print("    S:");
+        // Serial.println(set_temp);
         heat_plate_ct->turn_on(true, duty_cycle);
     }
 

@@ -16,7 +16,7 @@ class Config {
         void draw_config_menu(U8G2 &u8g2, int current_config);
         void draw_config_selector(U8G2 &u8g2, int current_config, int current_item);
         ConfigItem config_items[3][3] = {
-            {ConfigItem(temp_config, "Celcius", 0), ConfigItem(temp_config, "Fahrenheit", 1), ConfigItem(temp_config, "Kelvin", 0)},
+            {ConfigItem(temp_config, "Celcius", 1), ConfigItem(temp_config, "Fahrenheit", 0), ConfigItem(temp_config, "Kelvin", 0)},
             {ConfigItem(load_control, "Ciclos Completos", 1), ConfigItem(load_control, "Dimmer", 0), ConfigItem(load_control, "", 0)},
             {ConfigItem(pid, "Padrao", 1), ConfigItem(pid, "Rapido", 0), ConfigItem(pid, "Estavel", 0)}
         };

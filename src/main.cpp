@@ -2,10 +2,11 @@
 #include <U8g2lib.h>
 #include "FS.h"
 #include "SPIFFS.h"
+// #include "Adafruit_MLX90614.h"
 
 #include "models/rotary_switch/rotary_switch.h"
 #include "models/back_button/back_button.h"
-#include "models/temp_sensor/temp_sensor.h"
+// #include "models/temp_sensor/temp_sensor.h"
 #include "models/config/config.h"
 #include "models/config_file/config_file.h"
 
@@ -28,11 +29,15 @@
 #define BACK_BUTTON 5
 #define OLED_I2C_ADDR 0x3C
 
+#define SDA_2 18
+#define SCL_2 19
+
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 RotarySwitch* r_switch = new RotarySwitch(RS_DT_PIN, RS_CLK_PIN, RS_SWITCH_PIN);
 BackButton* back_button = new BackButton(BACK_BUTTON);
-TempSensor* temp_sensor = new TempSensor();
+// TempSensor* temp_sensor = new TempSensor();
+Adafruit_MLX90614 mlx;
 
 Config* config = new Config();
 ConfigFile* config_file = new ConfigFile();
@@ -42,10 +47,14 @@ uint8_t current_view = 0;
 void setup(void) {
     Serial.begin(115200);
 
-    temp_sensor->begin();
+    Wire.begin();
+    Wire1.begin(SDA_2, SCL_2);
 
-    // u8g2.setI2CAddress(2*0x3C);
-    // u8g2.begin();
+    u8g2.setI2CAddress(2*0x3C);
+    u8g2.begin();
+
+    mlx.begin(0x5A, &Wire1);
+    
         
     r_switch->begin();
     back_button->begin();
@@ -72,31 +81,31 @@ void setup(void) {
 
 void loop(void) {
 
-    show_const_temp(current_view, temp_sensor, r_switch, back_button, u8g2, config);
+    // show_const_temp(current_view, mlx, r_switch, back_button, u8g2, config);
 
-    // switch (current_view) {
-    //     case 0:
-    //         show_menu(current_view, r_switch, u8g2);
-    //         break;
+    switch (current_view) {
+        case 0:
+            show_menu(current_view, r_switch, u8g2);
+            break;
         
-    //     case 1:
-    //         show_const_temp(current_view, temp_sensor, r_switch, back_button, u8g2, config);
-    //         break;
+        case 1:
+            show_const_temp(current_view, mlx, r_switch, back_button, u8g2, config);
+            break;
         
-    //     case 2:
-    //         show_timer(current_view, temp_sensor, r_switch, back_button, u8g2, config);
-    //         break;
+        case 2:
+            show_timer(current_view, mlx, r_switch, back_button, u8g2, config);
+            break;
         
-    //     case 3: 
-    //         show_gen_reflow(current_view, temp_sensor, r_switch, back_button, u8g2, config);
-    //         break;
+        case 3: 
+            show_gen_reflow(current_view, mlx, r_switch, back_button, u8g2, config);
+            break;
 
-    //     case 5:
-    //         show_config(current_view, r_switch, back_button, u8g2, config);
-    //         break;
+        case 5:
+            show_config(current_view, r_switch, back_button, u8g2, config);
+            break;
 
-    //     default:
-    //         show_menu(current_view, r_switch, u8g2);
-    //         break;
-    // }
+        default:
+            show_menu(current_view, r_switch, u8g2);
+            break;
+    }
 };

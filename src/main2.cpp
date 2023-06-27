@@ -251,3 +251,53 @@
 //             break;
 //     }
 // };
+
+
+
+
+
+
+
+
+
+
+
+
+// void setup() {
+//     Serial.begin(115200);
+//     Serial.println(F("I2C test"));
+
+//     Wire.begin();
+//     // Wire1.begin(SDA_2, SCL_2);
+//     u8g2.setI2CAddress(2*0x3C);
+//     u8g2.begin();
+//     // if(!u8g2.begin()) {
+
+//     //     Serial.println("Error connecting to OLEDdisplay. Check wiring.");
+//     //     while(1);
+//     // }
+
+//     // if(!mlx.begin(0x5A, &Wire1)) {
+//     //     Serial.println("Error connecting to MLX sensor. Check wiring.");
+//     //     while(1);
+//     // }
+
+//     Serial.println();
+// }
+
+// void loop() {
+
+//     u8g2.clearBuffer();
+//     u8g2.setBitmapMode(true);
+//     u8g2.setFont(u8g2_font_haxrcorp4089_tr);
+//     u8g2.setFontRefHeightExtendedText();
+//     u8g2.setDrawColor(1);
+//     u8g2.setFontPosTop();
+//     u8g2.setFontDirection(0);
+//     u8g2.drawStr(6, 0, "T. Const");
+//     u8g2.sendBuffer();
+
+//     // double temp = mlx.readObjectTempC();
+//     // Serial.println(temp);
+//     // delay(1000);
+// }

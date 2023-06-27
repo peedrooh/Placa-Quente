@@ -6,7 +6,7 @@ byte was_answered = 0;
 
 float temperature = 20;
 
-extern void show_gen_reflow(uint8_t &current_view, TempSensor* &temp_sensor, RotarySwitch* &r_switch, BackButton* &back_button, U8G2 &u8g2, Config* &config) {
+extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_sensor, RotarySwitch* &r_switch, BackButton* &back_button, U8G2 &u8g2, Config* &config) {
     byte answer = 0;
 
     if(!was_answered) {

@@ -4,7 +4,12 @@ Timer* timer = new Timer();
 HeatPlate* heat_plate_tm = new HeatPlate();
 PIDController* pid_tm = new PIDController(0.5, 0.1, 0.2, 100, 0, 100);
 
-extern void show_timer(uint8_t &current_view, TempSensor* &temp_sensor, RotarySwitch* &r_switch, BackButton* &back_button, U8G2 &u8g2, Config* &config) {
+double duty_cycle_tm;
+
+int set_temp_tm = timer->get_temp();
+float curr_temp_tm = 0.0;
+
+extern void show_timer(uint8_t &current_view, Adafruit_MLX90614 &temp_sensor, RotarySwitch* &r_switch, BackButton* &back_button, U8G2 &u8g2, Config* &config) {
     r_switch->turn_detect();
     // r_switch->counter =12;
     if(r_switch->counter > 12) r_switch->counter--;
@@ -70,12 +75,41 @@ extern void show_timer(uint8_t &current_view, TempSensor* &temp_sensor, RotarySw
         timer->draw_timer_screen(u8g2, temperature, (time_sec - elapsed_time)/60, (time_sec - elapsed_time)%60, config->config_items[0][0].is_selected);
         u8g2.sendBuffer();
 
+        set_temp_tm = temperature;
+        if(config->config_items[0][0].is_selected) {
+            curr_temp_tm = temp_sensor.readObjectTempC();
+        } else {
+            curr_temp_tm = temp_sensor.readObjectTempF();
+        }
+
+
+        while(set_temp_tm > curr_temp_tm) {
+            if(config->config_items[0][0].is_selected) {
+                curr_temp_tm = temp_sensor.readObjectTempC();
+            } else {
+                curr_temp_tm = temp_sensor.readObjectTempF();
+            }
+            heat_plate_tm->turn_on(1, 100);
+        }
+
         while (elapsed_time<time_sec) {
+            
+            curr_temp_tm = temp_sensor.readObjectTempC();
+            
+
             if(back_button->is_clicked()) {
                 current_view = 0;
                 break;
             };
+
             curr_time = millis();
+
+            if(set_temp_tm > curr_temp_tm) {
+                duty_cycle_tm = 100;
+            } else {
+                duty_cycle_tm = 0;
+            }
+            heat_plate_tm->turn_on(1, duty_cycle_tm);
 
             // CONTROLE DE TEMPERATURA
             if(curr_time - prev_time >= 1000) {

@@ -1,4 +1,5 @@
-.pio
+.pio/libdeps/esp32dev/U8g2*
+.pio/build*
 .vscode/.browse.c_cpp.db*
 .vscode/c_cpp_properties.json
 .vscode/launch.json
