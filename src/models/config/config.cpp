@@ -37,8 +37,8 @@ void Config::_draw_scroll_bar(U8G2 &u8g2, int current_config) {
     }
     // draw scrollbar bar
     if (!current_config) u8g2.drawBox(BAR_X_POSITION, 14 + (BAR_Y_POSITION*current_config), BAR_WIDTH, BAR_HEIGHT);
-    else if (current_config == NUM_CONFIG_ITEMS - 1) u8g2.drawBox(BAR_X_POSITION, 14 + (BAR_Y_POSITION*current_config) - BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT);
-    else u8g2.drawBox(BAR_X_POSITION, 14 + (BAR_Y_POSITION*current_config) - (BAR_HEIGHT/2), BAR_WIDTH, BAR_HEIGHT);
+    // else if (current_config == NUM_CONFIG_ITEMS - 1) u8g2.drawBox(BAR_X_POSITION, 14 + (BAR_Y_POSITION*current_config) - BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT);
+    else u8g2.drawBox(BAR_X_POSITION, 54, BAR_WIDTH, BAR_HEIGHT);
 }
 
 void Config::_draw_config_menu_items(U8G2 &u8g2, int current_config) {

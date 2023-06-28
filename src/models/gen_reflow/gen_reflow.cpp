@@ -50,8 +50,8 @@ void GenericReflow::_draw_focus_answer(U8G2 &u8g2, uint8_t x, uint8_t y) {
     // u8g2.drawBox(94, 28, 19, 11);
 }
 
-void GenericReflow::draw_temp_graph(U8G2 &u8g2) {
-    this->_draw_XY_axis(u8g2);
+void GenericReflow::draw_temp_graph(U8G2 &u8g2, byte is_celcius) {
+    this->_draw_XY_axis(u8g2, is_celcius);
 
     for(int i = 0; i < 330; i++) {
         // x ranges from 20 to 125
@@ -63,12 +63,15 @@ void GenericReflow::draw_temp_graph(U8G2 &u8g2) {
         // But we must add the 20 that we removed in the begining of the calculations, so
         // x = ((time*95)/330)+20
         float x = ((this->_points[i][0]*95)/330)+20;
-        float y = 47 - ((this->_points[i][1]*47)/200);
+        float y = 54 - ((this->_points[i][1]*48)/250);
+        // if(!is_celcius) {
+        //     y = 54 - ((this->_points[i][1]*48)/392);
+        // }
         u8g2.drawPixel(x, y);
     }
 }
 
-void GenericReflow::_draw_XY_axis(U8G2 &u8g2) {
+void GenericReflow::_draw_XY_axis(U8G2 &u8g2, byte is_celcius) {
 
     u8g2.drawLine(PLOT_START_X, PLOT_START_Y, PLOT_START_X, PLOT_END_Y);
     u8g2.drawLine(PLOT_START_X, PLOT_END_Y, PLOT_END_X, PLOT_END_Y);
@@ -95,19 +98,29 @@ void GenericReflow::_draw_XY_axis(U8G2 &u8g2) {
     u8g2.setDrawColor(1);
     u8g2.setFontPosTop();
     u8g2.setFontDirection(0);
-    u8g2.drawStr(25, 1, "T[C]");
     u8g2.drawStr(109, 37, "t[s]");
-
-    u8g2.drawStr(0, 5, "200");
-    u8g2.drawStr(3, 15, "150");
-    u8g2.drawStr(3, 25, "100");
-    u8g2.drawStr(6, 35, "50");
 
     u8g2.drawStr(12, 52, "0");
 
     u8g2.drawStr(44, 52, "90");
     u8g2.drawStr(70, 52, "180");
     u8g2.drawStr(97, 52, "270");
+    if(is_celcius) {
+        u8g2.drawStr(25, 1, "T[C]");
+
+        u8g2.drawStr(0, 5, "200");
+        u8g2.drawStr(3, 15, "150");
+        u8g2.drawStr(3, 25, "100");
+        u8g2.drawStr(6, 35, "50");
+    } else {
+        u8g2.drawStr(25, 1, "T[F]");
+
+        u8g2.drawStr(0, 5, "392");
+        u8g2.drawStr(3, 15, "302");
+        u8g2.drawStr(3, 25, "212");
+        u8g2.drawStr(6, 35, "122");
+
+    }
 }
 
 void GenericReflow::add_point_in_graph(uint16_t time, float temperature) {

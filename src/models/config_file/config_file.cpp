@@ -6,6 +6,10 @@ void ConfigFile::begin() {
         Serial.println("SPIFFS Mount Failed");
         return;
     }
+
+    // if(this->_spiffs.exists(this->_file_name)) {
+    //     this->_delete_file(this->_file_name);
+    // }
     
     if(!this->_spiffs.exists(this->_file_name)) {
         this->_spiffs.open(this->_file_name, FILE_WRITE);
@@ -39,9 +43,29 @@ void ConfigFile::begin() {
             }
         }
         File file = this->_spiffs.open(this->_file_name, FILE_WRITE);
+        this->is_celcius = byte (all_config[33] - 48);
+        this->is_full_cicles = byte (all_config[94] - 48);
         for(int i = 0; i < all_config_index; i++) {
+            // Serial.print(all_config[i]);
+            // Serial.print("   ");
+            // Serial.print(i);
+            // Serial.print("   ");
             file.print(all_config[i]);
         }
+    } else {
+        File file = this->_spiffs.open(this->_file_name, FILE_READ);
+        size_t file_size = file.size();
+        
+        char all_config[1000];
+        uint16_t all_config_index = 0;
+        while(all_config_index < file_size - 1){
+            int x = file.read();
+            all_config[all_config_index] = x;
+            all_config_index++;
+            // Serial.write(x);
+        }
+        this->is_celcius = byte (all_config[33] - 48);
+        this->is_full_cicles = byte (all_config[94] - 48);
     }
 
 }
@@ -58,7 +82,7 @@ void ConfigFile::update_config(ConfigItem &config_item, byte updated_config_valu
     config_item.is_selected = updated_config_value;
     File file = this->_spiffs.open(this->_file_name, FILE_READ);
     size_t file_size = file.size();
-    Serial.println(file_size);
+    // Serial.println(file_size);
     if(!file || file.isDirectory()){
         return;
     }
@@ -70,11 +94,12 @@ void ConfigFile::update_config(ConfigItem &config_item, byte updated_config_valu
     bool is_next_line = false;
     while(all_config_index < file_size - 1) {
         int letter = file.read();
+        // Serial.print(char(letter));
 
         if(letter == 10) {
             line[line_index] = '\n';
             if(
-                line[2] == config_item.title[0]
+                line[2] == config_item.title[0]  && line[3] == config_item.title[1]
             ) {
                 for(int i = 0; i < line_index - 1; i++) {
                     all_config[all_config_index] = line[i];

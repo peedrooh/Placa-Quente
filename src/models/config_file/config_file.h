@@ -13,7 +13,7 @@
 class ConfigFile {
     public:
         void begin();
-        static const int NUM_CONF_ROWS = 3;
+        static const int NUM_CONF_ROWS = 2;
         static const int NUM_CONF_COLS = 3;
         ConfigItem *get_configs(configs config_index);
         const String *get_configs_titles();
@@ -21,18 +21,18 @@ class ConfigFile {
         void _read_file(const char * path);
         const char *_file_name = "/configurations.txt"; 
         void _delete_file(const char * path);
+        byte is_celcius;
+        byte is_full_cicles;
     
     private:
         fs::SPIFFSFS _spiffs;
-        const String _configs_titles[NUM_CONF_COLS] = {
+        const String _configs_titles[NUM_CONF_ROWS] = {
             "Unidade de Temperatura",
-            "Tipo de Acionamento",
-            "Parametros PID"
+            "Tipo de Acionamento"
         };
         ConfigItem _config_items[NUM_CONF_ROWS][NUM_CONF_COLS] = {
-            {ConfigItem(temp_config, "Celcius", 1), ConfigItem(temp_config, "Fahrenheit", 0), ConfigItem(temp_config, "Kelvin", 0)}, 
-            {ConfigItem(load_control, "Ciclos Completos", 1), ConfigItem(load_control, "Dimmer", 0), ConfigItem(load_control, "", 0)}, 
-            {ConfigItem(pid, "Padrao", 1), ConfigItem(pid, "Rapido", 0), ConfigItem(pid, "Suave", 0)}
+            {ConfigItem(temp_config, "Celcius", 1), ConfigItem(temp_config, "Fahrenheit", 0), ConfigItem(temp_config, "", 0)}, 
+            {ConfigItem(load_control, "Ciclos Completos", 1), ConfigItem(load_control, "Dimmer", 0), ConfigItem(load_control, "", 0)}
         };
         void _list_dir(const char * dirname, uint8_t levels );
         void _write_file(const char * path, const char * message);

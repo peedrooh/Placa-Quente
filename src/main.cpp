@@ -59,7 +59,14 @@ void setup(void) {
     r_switch->begin();
     back_button->begin();
 
-    // config_file->begin();
+    config_file->begin();
+
+    config->config_items[0][0].is_selected = config_file->is_celcius;
+    config->config_items[0][1].is_selected = !config_file->is_celcius;
+    config->config_items[1][0].is_selected = config_file->is_full_cicles;
+    config->config_items[1][1].is_selected = !config_file->is_full_cicles;
+
+
     // // config_file->_read_file(config_file->_file_name);
     // config_file->update_config(config_file->get_configs(load_control)[2], 1);
     // config_file->update_config(config_file->get_configs(load_control)[1], 1);
@@ -101,7 +108,7 @@ void loop(void) {
             break;
 
         case 5:
-            show_config(current_view, r_switch, back_button, u8g2, config);
+            show_config(current_view, r_switch, back_button, u8g2, config, config_file);
             break;
 
         default:

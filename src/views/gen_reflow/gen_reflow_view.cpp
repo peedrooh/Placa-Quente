@@ -1,13 +1,19 @@
 #include "gen_reflow_view.h"
 
 GenericReflow* gen_reflow = new GenericReflow();
+HeatPlate* heat_plate_gr = new HeatPlate();
 
 byte was_answered = 0;
 
 float temperature = 20;
+double curr_time_gr = millis();
+double prev_time_gr = curr_time_gr;
+int elapsed_time_gr = 0;
 
 extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_sensor, RotarySwitch* &r_switch, BackButton* &back_button, U8G2 &u8g2, Config* &config) {
     byte answer = 0;
+    byte is_full_cicle_gr = config->config_items[1][0].is_selected;
+    byte is_celcius_gr = config->config_items[0][0].is_selected;
 
     if(!was_answered) {
         r_switch->turn_detect();
@@ -18,42 +24,120 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
     } 
 
     if(was_answered) {
-        temperature = 0;
+        temperature = temp_sensor.readObjectTempC();
+        elapsed_time_gr = 0;
+
         gen_reflow->reset_graph();
 
         u8g2.clearBuffer();
-        gen_reflow->draw_temp_graph(u8g2);
+        gen_reflow->draw_temp_graph(u8g2, is_celcius_gr);
         u8g2.sendBuffer();
 
-        for(int i = 0; i < 330; i++) {
+        while(elapsed_time_gr < 90) {
+            curr_time_gr = millis();
             if(back_button->is_clicked()) {
                 current_view = 0;
                 break;
             }
+            if (curr_time_gr - prev_time_gr >= 1000) {
+                prev_time_gr = curr_time_gr;
+                elapsed_time_gr++;
 
-            if(i < 90) {
-                temperature += 1.3;
-            }else if(i > 90 && i < 180) {
-                temperature += 0.3;
-            }else if(i > 180 && i < 240) {
-                temperature += 1;
-            }else if(i > 240 && i < 280) {
-                temperature  = temperature;
-            } else {
-                temperature = temperature - 2;
+                    temperature = temp_sensor.readObjectTempC();
+                // if (is_celcius_gr) {
+                //     temperature = temp_sensor.readObjectTempC();
+                // } else {
+                //     temperature = temp_sensor.readObjectTempF();
+                // }
+
+                gen_reflow->add_point_in_graph(elapsed_time_gr, temperature);
+
+                u8g2.clearBuffer();
+                gen_reflow->draw_temp_graph(u8g2, is_celcius_gr);
+                u8g2.sendBuffer();
             }
-
-            gen_reflow->add_point_in_graph(i, temperature);
-
-            u8g2.clearBuffer();
-            gen_reflow->draw_temp_graph(u8g2);
-            u8g2.sendBuffer();
-            delay(100);
+            if(temperature >= 140) heat_plate_gr->turn_on(is_full_cicle_gr, 0);
+            else heat_plate_gr->turn_on(is_full_cicle_gr, 40);
         }
 
-        delay(2000);
+        while(elapsed_time_gr < 180) {
+            curr_time_gr = millis();
+            if(back_button->is_clicked()) {
+                current_view = 0;
+                break;
+            }
+            if (curr_time_gr - prev_time_gr >= 1000) {
+                prev_time_gr = curr_time_gr;
+                elapsed_time_gr++;
+
+                    temperature = temp_sensor.readObjectTempC();
+                // if (is_celcius_gr) {
+                //     temperature = temp_sensor.readObjectTempC();
+                // } else {
+                //     temperature = temp_sensor.readObjectTempF();
+                // }
+
+                gen_reflow->add_point_in_graph(elapsed_time_gr, temperature);
+
+                u8g2.clearBuffer();
+                gen_reflow->draw_temp_graph(u8g2, is_celcius_gr);
+                u8g2.sendBuffer();
+            }
+            if(temperature >= 180) heat_plate_gr->turn_on(is_full_cicle_gr, 0);
+            else heat_plate_gr->turn_on(is_full_cicle_gr, 20);
+        }
+
+        while(elapsed_time_gr < 245) {
+            curr_time_gr = millis();
+            if(back_button->is_clicked()) {
+                current_view = 0;
+                break;
+            }
+            if (curr_time_gr - prev_time_gr >= 1000) {
+                prev_time_gr = curr_time_gr;
+                elapsed_time_gr++;
+
+                temperature = temp_sensor.readObjectTempC();
+                // if (is_celcius_gr) {
+                //     temperature = temp_sensor.readObjectTempC();
+                // } else {
+                //     temperature = temp_sensor.readObjectTempF();
+                // }
+
+                gen_reflow->add_point_in_graph(elapsed_time_gr, temperature);
+
+                u8g2.clearBuffer();
+                gen_reflow->draw_temp_graph(u8g2, 0);
+                u8g2.sendBuffer();
+            }
+            heat_plate_gr->turn_on(is_full_cicle_gr, 100);
+        }
+
+        while(elapsed_time_gr < 270) {
+            curr_time_gr = millis();
+            if(back_button->is_clicked()) {
+                current_view = 0;
+                break;
+            }
+            if (curr_time_gr - prev_time_gr >= 1000) {
+                prev_time_gr = curr_time_gr;
+                elapsed_time_gr++;
+
+                temperature = temp_sensor.readObjectTempC();
+                // if (is_celcius_gr) {
+                //     temperature = temp_sensor.readObjectTempC();
+                // } else {
+                //     temperature = temp_sensor.readObjectTempF();
+                // }
+
+                gen_reflow->add_point_in_graph(elapsed_time_gr, temperature);
+
+                u8g2.clearBuffer();
+                gen_reflow->draw_temp_graph(u8g2, is_celcius_gr);
+                u8g2.sendBuffer();
+            }
+        }
         current_view = 0;
-        was_answered = 0;
     } else {
         u8g2.clearBuffer();
         gen_reflow->draw_confirmation_screen(u8g2, answer);
