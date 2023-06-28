@@ -26,6 +26,7 @@ extern void show_const_temp(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
     set_temp = const_temp->get_temperature();
     pid_ct->setSetpoint(set_temp);
     pid_ct->resetVars();
+    byte is_full_cicles = config->config_items[1][0].is_selected;
     
     while(click_counter == 0) {
         if(r_switch->get_switch_state()) {
@@ -53,7 +54,7 @@ extern void show_const_temp(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
         // Serial.print(curr_temp);
         // Serial.print("    S:");
         // Serial.println(set_temp);
-        heat_plate_ct->turn_on(true, duty_cycle);
+        heat_plate_ct->turn_on(is_full_cicles, duty_cycle);
     }
 
     if(r_switch->get_switch_state() || was_controlling_temp) {

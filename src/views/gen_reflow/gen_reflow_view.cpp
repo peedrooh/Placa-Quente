@@ -43,12 +43,7 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
                 prev_time_gr = curr_time_gr;
                 elapsed_time_gr++;
 
-                    temperature = temp_sensor.readObjectTempC();
-                // if (is_celcius_gr) {
-                //     temperature = temp_sensor.readObjectTempC();
-                // } else {
-                //     temperature = temp_sensor.readObjectTempF();
-                // }
+                temperature = temp_sensor.readObjectTempC();
 
                 gen_reflow->add_point_in_graph(elapsed_time_gr, temperature);
 
@@ -70,12 +65,7 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
                 prev_time_gr = curr_time_gr;
                 elapsed_time_gr++;
 
-                    temperature = temp_sensor.readObjectTempC();
-                // if (is_celcius_gr) {
-                //     temperature = temp_sensor.readObjectTempC();
-                // } else {
-                //     temperature = temp_sensor.readObjectTempF();
-                // }
+                temperature = temp_sensor.readObjectTempC();
 
                 gen_reflow->add_point_in_graph(elapsed_time_gr, temperature);
 
@@ -98,16 +88,11 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
                 elapsed_time_gr++;
 
                 temperature = temp_sensor.readObjectTempC();
-                // if (is_celcius_gr) {
-                //     temperature = temp_sensor.readObjectTempC();
-                // } else {
-                //     temperature = temp_sensor.readObjectTempF();
-                // }
 
                 gen_reflow->add_point_in_graph(elapsed_time_gr, temperature);
 
                 u8g2.clearBuffer();
-                gen_reflow->draw_temp_graph(u8g2, 0);
+                gen_reflow->draw_temp_graph(u8g2, is_celcius_gr);
                 u8g2.sendBuffer();
             }
             heat_plate_gr->turn_on(is_full_cicle_gr, 100);
@@ -124,11 +109,6 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
                 elapsed_time_gr++;
 
                 temperature = temp_sensor.readObjectTempC();
-                // if (is_celcius_gr) {
-                //     temperature = temp_sensor.readObjectTempC();
-                // } else {
-                //     temperature = temp_sensor.readObjectTempF();
-                // }
 
                 gen_reflow->add_point_in_graph(elapsed_time_gr, temperature);
 
@@ -137,6 +117,7 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
                 u8g2.sendBuffer();
             }
         }
+        delay(5000);
         current_view = 0;
     } else {
         u8g2.clearBuffer();

@@ -11,7 +11,7 @@ float curr_temp_tm = 0.0;
 
 extern void show_timer(uint8_t &current_view, Adafruit_MLX90614 &temp_sensor, RotarySwitch* &r_switch, BackButton* &back_button, U8G2 &u8g2, Config* &config) {
     r_switch->turn_detect();
-    // r_switch->counter =12;
+    byte is_full_cicles = config->config_items[1][0].is_selected;
     if(r_switch->counter > 12) r_switch->counter--;
     if(r_switch->counter <= -1) r_switch->counter++;
     if(timer->get_timer_screen() == 0) {
@@ -89,12 +89,16 @@ extern void show_timer(uint8_t &current_view, Adafruit_MLX90614 &temp_sensor, Ro
             } else {
                 curr_temp_tm = temp_sensor.readObjectTempF();
             }
-            heat_plate_tm->turn_on(1, 100);
+            heat_plate_tm->turn_on(is_full_cicles, 100);
         }
 
         while (elapsed_time<time_sec) {
             
-            curr_temp_tm = temp_sensor.readObjectTempC();
+            if(config->config_items[0][0].is_selected) {
+                curr_temp_tm = temp_sensor.readObjectTempC();
+            } else {
+                curr_temp_tm = temp_sensor.readObjectTempF();
+            }
             
 
             if(back_button->is_clicked()) {
@@ -109,7 +113,7 @@ extern void show_timer(uint8_t &current_view, Adafruit_MLX90614 &temp_sensor, Ro
             } else {
                 duty_cycle_tm = 0;
             }
-            heat_plate_tm->turn_on(1, duty_cycle_tm);
+            heat_plate_tm->turn_on(is_full_cicles, duty_cycle_tm);
 
             // CONTROLE DE TEMPERATURA
             if(curr_time - prev_time >= 1000) {
@@ -122,6 +126,7 @@ extern void show_timer(uint8_t &current_view, Adafruit_MLX90614 &temp_sensor, Ro
         }
         if(elapsed_time == time_sec) {
             current_view = 0;
+            delay(5000);
         }
     }
 }
