@@ -37,7 +37,7 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
             curr_time_gr = millis();
             if(back_button->is_clicked()) {
                 current_view = 0;
-                break;
+                return;
             }
             if (curr_time_gr - prev_time_gr >= 1000) {
                 prev_time_gr = curr_time_gr;
@@ -59,7 +59,7 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
             curr_time_gr = millis();
             if(back_button->is_clicked()) {
                 current_view = 0;
-                break;
+                return;
             }
             if (curr_time_gr - prev_time_gr >= 1000) {
                 prev_time_gr = curr_time_gr;
@@ -81,7 +81,7 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
             curr_time_gr = millis();
             if(back_button->is_clicked()) {
                 current_view = 0;
-                break;
+                return;
             }
             if (curr_time_gr - prev_time_gr >= 1000) {
                 prev_time_gr = curr_time_gr;
@@ -102,7 +102,7 @@ extern void show_gen_reflow(uint8_t &current_view, Adafruit_MLX90614 &temp_senso
             curr_time_gr = millis();
             if(back_button->is_clicked()) {
                 current_view = 0;
-                break;
+                return;
             }
             if (curr_time_gr - prev_time_gr >= 1000) {
                 prev_time_gr = curr_time_gr;
